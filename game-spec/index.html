@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Game Spec</title>
+<style>
+  :root { --bg:#e6e8eb; --panel:#ffffff; --ink:#1d2127; --sub:#6b7380; --line:#c9ced6; --accent:#2f6fde; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"KHDot", system-ui, sans-serif; background:var(--bg); color:var(--ink); font-size:12px; line-height:1; -webkit-font-smoothing:none; font-smooth:never; }
+  header { display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px 14px; background:var(--panel); border-bottom:1px solid var(--line); }
+  .top { color:var(--sub); text-decoration:none; margin-right:6px; }
+  .top:hover { color:var(--ink); }
+  .sp { width:10px; }
+  .grow { flex:1; }
+  header label { display:flex; align-items:center; gap:6px; color:var(--sub); }
+  input { padding:4px 6px; border:1px solid var(--line); border-radius:4px; font:inherit; color:var(--ink); background:#fff; }
+  input[type=number] { width:56px; }
+  button { padding:6px 12px; border:1px solid var(--line); border-radius:4px; background:#f5f6f8; font:inherit; color:var(--ink); cursor:pointer; }
+  button[aria-pressed=true] { background:var(--ink); border-color:var(--ink); color:#fff; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  main { display:grid; grid-template-columns:1fr 280px; gap:12px; padding:12px; height:calc(100vh - 51px); min-height:360px; }
+  @media (max-width:700px){ main { grid-template-columns:1fr; height:auto; } }
+  .view { background:var(--panel); border:1px solid var(--line); border-radius:4px; display:flex; align-items:center; justify-content:center; overflow:auto; min-height:300px; padding:12px; }
+  #scr { display:block; flex:none; touch-action:none; cursor:crosshair; }
+  #scr .act { cursor:move; }
+  #scr .obj { cursor:pointer; }
+  .side { display:flex; flex-direction:column; gap:12px; min-width:0; min-height:0; }
+  #props { background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:12px; display:flex; flex-direction:column; gap:10px; }
+  #props[hidden] { display:none; }
+  #props label { display:flex; align-items:center; gap:6px; color:var(--sub); }
+  #props label input { flex:1; min-width:0; }
+  .chips { display:flex; flex-wrap:wrap; gap:4px; }
+  .chips button { padding:4px 8px; }
+  #fDel { align-self:flex-start; }
+  #txt { flex:1; margin:0; min-height:200px; background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:12px; font:inherit; line-height:1.5; white-space:pre; overflow:auto; color:var(--ink); }
+</style>
+</head>
+<body>
+<header>
+  <a class="top" href="../">Top</a>
+  <label>Size <input type="number" id="sw" min="32" max="1024" aria-label="Width"> x <input type="number" id="sh" min="32" max="1024" aria-label="Height"></label>
+  <span class="sp"></span>
+  <button data-m="wall" aria-pressed="true">Wall</button>
+  <button data-m="P" aria-pressed="false">Player</button>
+  <button data-m="E" aria-pressed="false">Enemy</button>
+  <button data-m="I" aria-pressed="false">Item</button>
+  <button data-m="move" aria-pressed="false">Move</button>
+  <button data-m="range" aria-pressed="false">Range</button>
+  <span class="sp"></span>
+  <button id="undo">Undo</button>
+  <button id="clear">Clear</button>
+  <span class="grow"></span>
+  <button id="copy">Copy</button>
+  <button class="primary" id="save">Save</button>
+</header>
+<main>
+  <div class="view" id="view"><svg id="scr" tabindex="0" role="application" aria-label="Screen" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div class="side">
+    <div id="props" hidden></div>
+    <pre id="txt" aria-label="Spec"></pre>
+  </div>
+</main>
+<script>
+const FONT='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';
+document.head.insertAdjacentHTML('beforeend', `<style>@font-face{font-family:"KHDot";src:url(data:font/woff;base64,${FONT}) format("woff");}</style>`);
+
+const $ = id => document.getElementById(id);
+const T = 16;                                   // 1タイル16px
+const INK = '#1d2127', SUB = '#6b7380', ACC = '#2f6fde', WALL = '#c9ced6';
+const KIND = { P: 'Player', E: 'Enemy', I: 'Item' };
+const TAGS = {
+  P: ['Walk', 'Run', 'Jump', 'Dash', 'Attack', 'Shoot'],
+  E: ['Stay', 'Walk', 'Patrol', 'Chase', 'Flee', 'Jump', 'Fly', 'Shoot'],
+  I: ['Heal', 'Power', 'Score', 'Key'],
+};
+const scr = $('scr'), view = $('view'), props = $('props'), txt = $('txt');
+
+const fresh = (w, h) => ({ w, h, walls: {}, actors: [], arrows: [], ranges: [], id: 1, no: { P: 1, E: 1, I: 1 } });
+let S = fresh(256, 192);
+let Z = 2, sel = null, mode = 'wall', drag = null, hist = [];
+
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const snap = () => JSON.stringify(S);
+const commit = before => { if (before !== snap()) { hist.push(before); if (hist.length > 100) hist.shift(); } };
+const cols = () => Math.ceil(S.w / T), rows = () => Math.ceil(S.h / T);
+const inside = (x, y) => x >= 0 && y >= 0 && x < cols() && y < rows();
+const actor = id => S.actors.find(a => a.id === id);
+const find = id => actor(id) || S.arrows.find(o => o.id === id) || S.ranges.find(o => o.id === id);
+const code = a => a.k + a.no;
+const mid = a => [(a.x + .5) * T * Z, (a.y + .5) * T * Z];
+
+const mctx = document.createElement('canvas').getContext('2d');
+const textW = s => { mctx.font = '12px KHDot, system-ui, sans-serif'; return mctx.measureText(s).width; };
+const tag = (t, x, y, c) => {
+  if (!t) return '';
+  const w = textW(t) + 8;
+  return `<rect x="${x - w/2}" y="${y - 9}" width="${w}" height="17" fill="#fff" stroke="${c}"/>`
+    + `<text x="${x}" y="${y + 4}" text-anchor="middle" fill="${c}">${esc(t)}</text>`;
+};
+
+function body(selId){
+  const t = T * Z, W = S.w * Z, H = S.h * Z;
+  let s = `<defs>
+<pattern id="g" width="${t}" height="${t}" patternUnits="userSpaceOnUse"><path d="M${t} 0H0V${t}" fill="none" stroke="#e8eaee"/></pattern>
+<marker id="hd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="${INK}"/></marker>
+<marker id="hs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="${ACC}"/></marker>
+<style>text{font:12px KHDot,system-ui,sans-serif;-webkit-font-smoothing:none}</style>
+</defs><rect width="${W}" height="${H}" fill="#fff"/><rect width="${W}" height="${H}" fill="url(#g)"/>`;
+  for (const k in S.walls){
+    const [x, y] = k.split(',').map(Number);
+    if (inside(x, y)) s += `<rect x="${x*t}" y="${y*t}" width="${t}" height="${t}" fill="${WALL}"/>`;
+  }
+  S.ranges.forEach(r => {
+    const a = actor(r.a); if (!a) return;
+    const [cx, cy] = mid(a), R = r.r * Z, on = r.id === selId, c = on ? ACC : INK;
+    s += `<g class="obj" data-id="${r.id}"><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="transparent" stroke-width="10"/>`
+      + `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${c}" stroke-width="${on ? 2 : 1}" stroke-dasharray="4 3"/>`
+      + tag(r.t, cx, cy - R, c) + `</g>`;
+  });
+  S.arrows.forEach(r => {
+    const a = actor(r.a); if (!a) return;
+    const [x1, y1] = mid(a), x2 = x1 + r.dx * t, y2 = y1 + r.dy * t, on = r.id === selId, c = on ? ACC : INK;
+    s += `<g class="obj" data-id="${r.id}"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="transparent" stroke-width="12"/>`
+      + `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${on ? 2 : 1.5}" marker-end="url(#${on ? 'hs' : 'hd'})"/>`
+      + tag(r.t, (x1 + x2) / 2, (y1 + y2) / 2, c) + `</g>`;
+  });
+  S.actors.forEach(a => {
+    const x = a.x * t, y = a.y * t, on = a.id === selId, c = on ? ACC : INK, sw = on ? 2 : 1.5;
+    const i = Math.max(2, t / 8), cx = x + t / 2, cy = y + t / 2;
+    let sh;
+    if (a.k === 'P') sh = `<rect x="${x+i}" y="${y+i}" width="${t-2*i}" height="${t-2*i}" fill="${INK}" stroke="${on ? ACC : INK}" stroke-width="${sw}"/>`;
+    else if (a.k === 'E') sh = `<rect x="${x+i}" y="${y+i}" width="${t-2*i}" height="${t-2*i}" fill="#fff" stroke="${c}" stroke-width="${sw}"/>`;
+    else sh = `<polygon points="${cx},${y+i} ${x+t-i},${cy} ${cx},${y+t-i} ${x+i},${cy}" fill="#fff" stroke="${c}" stroke-width="${sw}"/>`;
+    const ny = a.y > 0 ? y - 4 : y + t + 12;
+    s += `<g class="act" data-id="${a.id}">${sh}`
+      + `<text x="${cx}" y="${cy + 4}" text-anchor="middle" fill="${a.k === 'P' ? '#fff' : c}">${code(a)}</text>`
+      + (a.name ? `<text x="${cx}" y="${ny}" text-anchor="middle" fill="${SUB}">${esc(a.name)}</text>` : '') + `</g>`;
+  });
+  return s + `<rect x=".5" y=".5" width="${W-1}" height="${H-1}" fill="none" stroke="${INK}" pointer-events="none"/>`;
+}
+
+function render(){
+  let s = body(sel);
+  if (drag && drag.k === 'arrow'){
+    const [x1, y1] = mid(drag.a);
+    s += `<line x1="${x1}" y1="${y1}" x2="${(drag.tx + .5) * T * Z}" y2="${(drag.ty + .5) * T * Z}" stroke="${ACC}" stroke-width="1.5" stroke-dasharray="4 3" pointer-events="none"/>`;
+  }
+  if (drag && drag.k === 'range' && drag.r){
+    const [cx, cy] = mid(drag.a);
+    s += `<circle cx="${cx}" cy="${cy}" r="${drag.r * Z}" fill="none" stroke="${ACC}" stroke-dasharray="4 3" pointer-events="none"/>`;
+  }
+  scr.innerHTML = s;
+  txt.textContent = toText();
+}
+
+// 画面サイズに合わせて整数倍で表示
+function fit(){
+  $('sw').value = S.w; $('sh').value = S.h;
+  scr.setAttribute('width', 0); scr.setAttribute('height', 0);
+  Z = clamp(Math.floor(Math.min((view.clientWidth - 26) / S.w, (view.clientHeight - 26) / S.h)), 1, 8);
+  scr.setAttribute('width', S.w * Z); scr.setAttribute('height', S.h * Z);
+}
+
+// 選んだものの設定欄
+function select(id){
+  sel = id;
+  const o = id && find(id);
+  props.hidden = !o;
+  if (!o){ props.innerHTML = ''; return; }
+  const a = o.k ? o : actor(o.a);
+  let h = `<div>${code(a)} ${o.k ? KIND[o.k] : 'dx' in o ? 'Move' : 'Range'}</div>`;
+  if (o.k){
+    h += `<label>Name <input data-f="name" aria-label="Name"></label>`
+      + `<div class="chips" role="group" aria-label="Behavior">`
+      + TAGS[o.k].map(t => `<button type="button" data-t="${t}" aria-pressed="${o.tags.includes(t)}">${t}</button>`).join('')
+      + `</div><label>Note <input data-f="note" aria-label="Note"></label>`;
+  } else h += `<label>Label <input data-f="t" aria-label="Label"></label>`;
+  h += `<button type="button" id="fDel">Delete</button>`;
+  props.innerHTML = h;
+  props.querySelectorAll('input').forEach(inp => {
+    const f = inp.dataset.f; let before = snap();
+    inp.value = o[f];
+    inp.onfocus = () => before = snap();
+    inp.oninput = () => { o[f] = inp.value; render(); };
+    inp.onchange = () => { o[f] = inp.value.trim(); inp.value = o[f]; commit(before); before = snap(); render(); };
+    inp.onkeydown = e => { if (e.key === 'Enter' && !e.isComposing){ inp.blur(); scr.focus({ preventScroll: true }); } };
+  });
+  props.querySelectorAll('[data-t]').forEach(b => b.onclick = () => {
+    const before = snap(), t = b.dataset.t;
+    o.tags = o.tags.includes(t) ? o.tags.filter(x => x !== t) : TAGS[o.k].filter(x => x === t || o.tags.includes(x));
+    b.setAttribute('aria-pressed', o.tags.includes(t)); commit(before); render();
+  });
+  $('fDel').onclick = del;
+}
+
+const pt = e => {
+  const r = scr.getBoundingClientRect(), px = (e.clientX - r.left) / Z, py = (e.clientY - r.top) / Z;
+  return { px, py, tx: Math.floor(px / T), ty: Math.floor(py / T) };
+};
+const hitId = el => { const g = el && el.closest && el.closest('[data-id]'); return g ? +g.dataset.id : null; };
+const paint = p => {
+  if (!inside(p.tx, p.ty)) return false;
+  const k = p.tx + ',' + p.ty;
+  if (drag.on === !!S.walls[k]) return false;
+  if (drag.on) S.walls[k] = 1; else delete S.walls[k];
+  return true;
+};
+
+scr.addEventListener('pointerdown', e => {
+  if (e.button > 0) return;
+  const p = pt(e), id = hitId(e.target), o = id && find(id), before = snap();
+  if (o && o.k){
+    if (mode === 'move') drag = { k: 'arrow', a: o, tx: p.tx, ty: p.ty, before };
+    else if (mode === 'range') drag = { k: 'range', a: o, r: 0, before };
+    else drag = { k: 'drag', a: o, before };
+    select(id);
+  } else if (o) select(id);
+  else {
+    select(null);
+    if (mode === 'wall' && inside(p.tx, p.ty)){ drag = { k: 'paint', on: !S.walls[p.tx + ',' + p.ty], before }; paint(p); }
+    else if (KIND[mode] && inside(p.tx, p.ty) && !S.actors.some(a => a.x === p.tx && a.y === p.ty)){
+      const a = { id: S.id++, k: mode, no: S.no[mode]++, x: p.tx, y: p.ty, name: '', tags: [], note: '' };
+      S.actors.push(a); commit(before); select(a.id);
+      drag = { k: 'drag', a, before: snap() };
+    }
+  }
+  if (drag) scr.setPointerCapture(e.pointerId);
+  scr.focus({ preventScroll: true });
+  render();
+});
+
+scr.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const p = pt(e), d = drag;
+  if (d.k === 'drag'){
+    const nx = clamp(p.tx, 0, cols() - 1), ny = clamp(p.ty, 0, rows() - 1);
+    if (nx === d.a.x && ny === d.a.y) return;
+    d.a.x = nx; d.a.y = ny;
+  } else if (d.k === 'paint'){ if (!paint(p)) return; }
+  else if (d.k === 'arrow'){
+    const tx = clamp(p.tx, 0, cols() - 1), ty = clamp(p.ty, 0, rows() - 1);
+    if (tx === d.tx && ty === d.ty) return;
+    d.tx = tx; d.ty = ty;
+  } else if (d.k === 'range'){
+    const r = Math.round(Math.hypot(p.px - (d.a.x + .5) * T, p.py - (d.a.y + .5) * T) / 8) * 8;
+    if (r === d.r) return;
+    d.r = r;
+  }
+  render();
+});
+
+const up = () => {
+  if (!drag) return;
+  const d = drag; drag = null;
+  if (d.k === 'arrow'){
+    const dx = d.tx - d.a.x, dy = d.ty - d.a.y;
+    if (dx || dy){ const r = { id: S.id++, a: d.a.id, dx, dy, t: '' }; S.arrows.push(r); select(r.id); }
+  }
+  if (d.k === 'range' && d.r > 0){ const r = { id: S.id++, a: d.a.id, r: d.r, t: '' }; S.ranges.push(r); select(r.id); }
+  commit(d.before); render();
+  if ((d.k === 'arrow' || d.k === 'range') && sel && !find(sel).k) props.querySelector('input').focus();
+};
+scr.addEventListener('pointerup', up);
+scr.addEventListener('pointercancel', up);
+
+function del(){
+  if (!sel) return;
+  const before = snap(), id = sel;
+  S.actors = S.actors.filter(a => a.id !== id);
+  S.arrows = S.arrows.filter(r => r.id !== id && r.a !== id);
+  S.ranges = S.ranges.filter(r => r.id !== id && r.a !== id);
+  select(null); commit(before); render(); scr.focus({ preventScroll: true });
+}
+function undo(){
+  if (!hist.length) return;
+  S = JSON.parse(hist.pop()); drag = null; select(null); fit(); render();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z'){ undo(); e.preventDefault(); return; }
+  if (document.activeElement !== scr) return;
+  const a = sel && actor(sel);
+  if (e.key === 'Delete' || e.key === 'Backspace'){ del(); e.preventDefault(); }
+  else if (e.key === 'Escape'){ select(null); render(); }
+  else if (a && e.key.startsWith('Arrow')){
+    const dx = { ArrowLeft: -1, ArrowRight: 1 }[e.key] || 0, dy = { ArrowUp: -1, ArrowDown: 1 }[e.key] || 0, before = snap();
+    a.x = clamp(a.x + dx, 0, cols() - 1); a.y = clamp(a.y + dy, 0, rows() - 1);
+    commit(before); render(); e.preventDefault();
+  }
+});
+
+document.querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
+  mode = b.dataset.m;
+  document.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-pressed', x === b));
+});
+['sw', 'sh'].forEach(k => $(k).onchange = () => {
+  const before = snap();
+  S[k === 'sw' ? 'w' : 'h'] = clamp(Math.round(+$(k).value) || 256, 32, 1024);
+  S.actors.forEach(a => { a.x = Math.min(a.x, cols() - 1); a.y = Math.min(a.y, rows() - 1); });
+  commit(before); fit(); render();
+});
+$('undo').onclick = undo;
+$('clear').onclick = () => { const before = snap(); S = fresh(S.w, S.h); select(null); commit(before); render(); };
+window.onresize = () => { fit(); render(); };
+
+// AIに渡すテキスト
+function toText(){
+  const C = cols(), R = rows();
+  const L = [`Game screen ${S.w}x${S.h} px. Tile ${T}px (${C}x${R} tiles). Positions in tiles [x,y], origin top-left.`];
+  const map = Array.from({ length: R }, (_, y) => Array.from({ length: C }, (_, x) => S.walls[x + ',' + y] ? '#' : '.'));
+  S.actors.forEach(a => { if (inside(a.x, a.y)) map[a.y][a.x] = a.k; });
+  L.push('', 'Map (# wall, P player, E enemy, I item):', ...map.map(r => r.join('')));
+  const list = [...S.actors].sort((a, b) => 'PEI'.indexOf(a.k) - 'PEI'.indexOf(b.k) || a.no - b.no);
+  if (list.length) L.push('', 'Objects:');
+  list.forEach(a => {
+    L.push(`${code(a)} ${KIND[a.k]}` + (a.name ? ` "${a.name}"` : '') + ` [${a.x},${a.y}]` + (a.tags.length ? ` : ${a.tags.join(', ')}` : ''));
+    if (a.note) L.push(`  Note: ${a.note}`);
+    S.arrows.filter(r => r.a === a.id).forEach(r =>
+      L.push(`  Move -> [${a.x + r.dx},${a.y + r.dy}]` + (r.t ? ` "${r.t}"` : '')));
+    S.ranges.filter(r => r.a === a.id).forEach(r =>
+      L.push(`  Range ${r.r / T} tiles` + (r.t ? ` "${r.t}"` : '')));
+  });
+  return L.join('\n');
+}
+$('copy').onclick = async () => {
+  try { await navigator.clipboard.writeText(toText()); $('copy').textContent = 'Copied'; }
+  catch { $('copy').textContent = 'Error'; }
+  setTimeout(() => $('copy').textContent = 'Copy', 1200);
+};
+
+// PNG書き出し（表示中の倍率のまま）
+$('save').onclick = () => {
+  const W = S.w * Z, H = S.h * Z;
+  const src = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">`
+    + `<style>@font-face{font-family:"KHDot";src:url(data:font/woff;base64,${FONT}) format("woff");}</style>`
+    + body(null) + `</svg>`;
+  const img = new Image();
+  img.onload = () => {
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    cv.getContext('2d').drawImage(img, 0, 0);
+    const a = document.createElement('a');
+    a.download = `spec_${S.w}x${S.h}.png`; a.href = cv.toDataURL('image/png'); a.click();
+  };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(src);
+};
+
+fit(); render();
+</script>
+</body>
+</html>

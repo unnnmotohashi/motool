@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grid Note</title>
+<style>
+  :root { --bg:#e6e8eb; --panel:#ffffff; --ink:#1d2127; --sub:#6b7380; --line:#c9ced6; --accent:#2f6fde; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"KHDot", system-ui, sans-serif; background:var(--bg); color:var(--ink); font-size:12px; line-height:1; -webkit-font-smoothing:none; font-smooth:never; }
+  header { display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px 14px; background:var(--panel); border-bottom:1px solid var(--line); }
+  .top { color:var(--sub); text-decoration:none; margin-right:6px; }
+  .top:hover { color:var(--ink); }
+  .sp { width:10px; }
+  .grow { flex:1; }
+  button { padding:6px 12px; border:1px solid var(--line); border-radius:4px; background:#f5f6f8; font:inherit; color:var(--ink); cursor:pointer; }
+  button[aria-pressed=true] { background:var(--ink); border-color:var(--ink); color:#fff; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  main { padding:12px; overflow:auto; }
+  .wrap { position:relative; width:max-content; background:var(--panel); border:1px solid var(--line); border-radius:4px; overflow:hidden; }
+  #paper { display:block; touch-action:none; cursor:crosshair; }
+  #paper.link { cursor:alias; }
+  #paper .box { cursor:move; }
+  #paper.link .box { cursor:alias; }
+  #paper .handle { cursor:nwse-resize; }
+  #paper .arrow { cursor:pointer; }
+  #ed { position:absolute; display:none; font:12px system-ui, sans-serif; padding:2px 3px; border:1px solid var(--accent); border-radius:0; outline:0; background:#fff; color:var(--ink); }
+</style>
+</head>
+<body>
+<header>
+  <a class="top" href="../">Top</a>
+  <button id="mBox" aria-pressed="true">Box</button>
+  <button id="mArrow" aria-pressed="false">Arrow</button>
+  <span class="sp"></span>
+  <button id="undo">Undo</button>
+  <button id="clear">Clear</button>
+  <span class="grow"></span>
+  <button id="copy">Copy</button>
+  <button class="primary" id="save">Save</button>
+</header>
+<main>
+  <div class="wrap">
+    <svg id="paper" tabindex="0" role="application" aria-label="Paper" xmlns="http://www.w3.org/2000/svg"></svg>
+    <input id="ed" aria-label="Label">
+  </div>
+</main>
+<script>
+const FONT='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';
+document.head.insertAdjacentHTML('beforeend', `<style>@font-face{font-family:"KHDot";src:url(data:font/woff;base64,${FONT}) format("woff");}</style>`);
+
+const $ = id => document.getElementById(id);
+const C = 16, GW = 64, GH = 40;            // 1マス16px、64×40マス
+const INK = '#1d2127', SUB = '#6b7380', ACC = '#2f6fde';
+const paper = $('paper'), ed = $('ed');
+paper.setAttribute('width', GW * C); paper.setAttribute('height', GH * C);
+
+let S = { boxes: [], arrows: [], n: 1 };
+let sel = null, mode = 'box', drag = null, hist = [], down = { x: 0, y: 0 }, lastClick = { x: 0, y: 0, t: 0 }, editing = null;
+
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const box = id => S.boxes.find(b => b.id === id);
+const find = id => box(id) || S.arrows.find(a => a.id === id);
+const snapshot = () => JSON.stringify(S);
+const commit = before => { if (before !== snapshot()) { hist.push(before); if (hist.length > 100) hist.shift(); } };
+
+const mctx = document.createElement('canvas').getContext('2d');
+const textW = s => { mctx.font = '12px KHDot, system-ui, sans-serif'; return mctx.measureText(s).width; };
+
+// 箱の中心から相手の中心へ向かう線を、箱の縁で切る
+function edge(b, tx, ty){
+  const cx = (b.x + b.w / 2) * C, cy = (b.y + b.h / 2) * C;
+  const dx = tx - cx, dy = ty - cy;
+  if (!dx && !dy) return [cx, cy];
+  const t = Math.min(dx ? (b.w * C / 2) / Math.abs(dx) : 1e9, dy ? (b.h * C / 2) / Math.abs(dy) : 1e9);
+  return [cx + dx * t, cy + dy * t];
+}
+const center = b => [(b.x + b.w / 2) * C, (b.y + b.h / 2) * C];
+
+function svgBody(selId){
+  let s = `<defs>
+<pattern id="g1" width="${C}" height="${C}" patternUnits="userSpaceOnUse"><path d="M${C} 0H0V${C}" fill="none" stroke="#e8eaee"/></pattern>
+<pattern id="g5" width="${C*5}" height="${C*5}" patternUnits="userSpaceOnUse"><path d="M${C*5} 0H0V${C*5}" fill="none" stroke="#c9ced6"/></pattern>
+<marker id="hd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="${INK}"/></marker>
+<marker id="hs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="${ACC}"/></marker>
+<style>text{font:12px KHDot,system-ui,sans-serif;-webkit-font-smoothing:none}</style>
+</defs>
+<rect width="100%" height="100%" fill="#fff"/><rect width="100%" height="100%" fill="url(#g1)"/><rect width="100%" height="100%" fill="url(#g5)"/>`;
+  // 大きい箱から描いて、中の箱が上に来るように
+  [...S.boxes].sort((a, b) => b.w * b.h - a.w * a.h).forEach(b => {
+    const on = b.id === selId, x = b.x * C, y = b.y * C, w = b.w * C, h = b.h * C;
+    s += `<g class="box" data-id="${b.id}"><rect x="${x+.5}" y="${y+.5}" width="${w-1}" height="${h-1}" fill="#fff" stroke="${on ? ACC : INK}" stroke-width="${on ? 2 : 1}"/>`
+      + `<text x="${x+w-4}" y="${y+h-4}" text-anchor="end" fill="${SUB}">#${b.id}</text>`
+      + `<text x="${x+4}" y="${y+14}" fill="${INK}">${esc(b.t)}</text>`
+      + (on ? `<rect class="handle" x="${x+w-6}" y="${y+h-6}" width="8" height="8" fill="${ACC}"/>` : '') + `</g>`;
+  });
+  S.arrows.forEach(a => {
+    const A = box(a.a), B = box(a.b); if (!A || !B) return;
+    const [x1, y1] = edge(A, ...center(B)), [x2, y2] = edge(B, ...center(A));
+    const on = a.id === selId, col = on ? ACC : INK;
+    s += `<g class="arrow" data-id="${a.id}"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="transparent" stroke-width="12"/>`
+      + `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${on ? 2 : 1.5}" marker-end="url(#${on ? 'hs' : 'hd'})"/>`;
+    if (a.t){
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, tw = textW(a.t) + 8;
+      s += `<rect x="${mx - tw/2}" y="${my - 9}" width="${tw}" height="17" fill="#fff" stroke="${col}"/>`
+        + `<text x="${mx}" y="${my + 4}" text-anchor="middle" fill="${col}">${esc(a.t)}</text>`;
+    }
+    s += `</g>`;
+  });
+  return s;
+}
+
+function render(){
+  let s = svgBody(sel);
+  if (drag && drag.k === 'link'){
+    const [x1, y1] = center(box(drag.a));
+    s += `<line x1="${x1}" y1="${y1}" x2="${drag.px * C}" y2="${drag.py * C}" stroke="${ACC}" stroke-width="1.5" stroke-dasharray="4 3" pointer-events="none"/>`;
+  }
+  paper.innerHTML = s;
+}
+
+const pt = e => { const r = paper.getBoundingClientRect(); return { x: (e.clientX - r.left) / C, y: (e.clientY - r.top) / C }; };
+const hitId = el => { const g = el && el.closest && el.closest('[data-id]'); return g ? +g.dataset.id : null; };
+
+paper.addEventListener('pointerdown', e => {
+  if (editing) finishEdit(true);
+  const p = pt(e), id = hitId(e.target), before = snapshot();
+  down = { x: e.clientX, y: e.clientY };
+
+  if (e.target.classList.contains('handle')) drag = { k: 'resize', b: box(sel), before };
+  else if (mode === 'arrow' && id && box(id)) drag = { k: 'link', a: id, px: p.x, py: p.y, before };
+  else if (id && id === sel && box(id)){ const b = box(id); drag = { k: 'move', b, sx: p.x, sy: p.y, x0: b.x, y0: b.y, before }; }
+  else if (id && !box(id)) sel = id;   // 矢印
+  else { sel = id; if (mode === 'box') drag = { k: 'new', x0: Math.round(p.x), y0: Math.round(p.y), before }; }  // 箱の中でも新しい箱を描く
+  if (drag) paper.setPointerCapture(e.pointerId);
+  paper.focus({ preventScroll: true });
+  render();
+});
+
+paper.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const p = pt(e);
+  if (drag.k === 'move'){
+    const b = drag.b;
+    const nx = clamp(drag.x0 + Math.round(p.x - drag.sx), 0, GW - b.w), ny = clamp(drag.y0 + Math.round(p.y - drag.sy), 0, GH - b.h);
+    if (nx === b.x && ny === b.y) return;
+    b.x = nx; b.y = ny;
+  } else if (drag.k === 'resize'){
+    const b = drag.b;
+    const w = clamp(Math.round(p.x) - b.x, 1, GW - b.x), h = clamp(Math.round(p.y) - b.y, 1, GH - b.y);
+    if (w === b.w && h === b.h) return;
+    b.w = w; b.h = h;
+  } else if (drag.k === 'new'){
+    const x1 = clamp(Math.round(p.x), 0, GW), y1 = clamp(Math.round(p.y), 0, GH);
+    const x = Math.min(drag.x0, x1), y = Math.min(drag.y0, y1), w = Math.abs(x1 - drag.x0), h = Math.abs(y1 - drag.y0);
+    if (!drag.b){ if (!w || !h) return; drag.b = { id: S.n++, x, y, w, h, t: '' }; S.boxes.push(drag.b); sel = drag.b.id; }
+    else if (w && h){ if (drag.b.x === x && drag.b.y === y && drag.b.w === w && drag.b.h === h) return; Object.assign(drag.b, { x, y, w, h }); }
+    else return;
+  } else if (drag.k === 'link'){ drag.px = p.x; drag.py = p.y; }
+  render();
+});
+
+paper.addEventListener('pointerup', e => {
+  // ダブルクリックでラベル編集（押した瞬間に描き直すため、標準のdblclickは使えない）
+  if (Math.hypot(e.clientX - down.x, e.clientY - down.y) < 4){
+    const now = Date.now();
+    if (now - lastClick.t < 400 && Math.hypot(e.clientX - lastClick.x, e.clientY - lastClick.y) < 6){
+      lastClick.t = 0;
+      if (drag){ commit(drag.before); drag = null; }
+      const id = hitId(document.elementFromPoint(e.clientX, e.clientY));
+      if (id){ sel = id; render(); startEdit(id); }
+      return;
+    }
+    lastClick = { x: e.clientX, y: e.clientY, t: now };
+  }
+  if (!drag) return;
+  const d = drag; drag = null;
+  if (d.k === 'link'){
+    const to = hitId(document.elementFromPoint(e.clientX, e.clientY));
+    if (to && to !== d.a && box(to) && !S.arrows.some(a => a.a === d.a && a.b === to)){
+      const a = { id: S.n++, a: d.a, b: to, t: '' }; S.arrows.push(a); sel = a.id;
+    }
+  }
+  commit(d.before);
+  render();
+  if (d.k === 'new' && d.b) startEdit(d.b.id);
+});
+
+// ラベル編集
+function startEdit(id){
+  const o = find(id); if (!o) return;
+  editing = { id, before: snapshot() };
+  if (o.w){ ed.style.left = o.x * C + 2 + 'px'; ed.style.top = o.y * C + 1 + 'px'; ed.style.width = Math.max(o.w * C - 4, 96) + 'px'; }
+  else {
+    const A = box(o.a), B = box(o.b), [x1, y1] = edge(A, ...center(B)), [x2, y2] = edge(B, ...center(A));
+    ed.style.left = (x1 + x2) / 2 - 48 + 'px'; ed.style.top = (y1 + y2) / 2 - 10 + 'px'; ed.style.width = '96px';
+  }
+  ed.value = o.t; ed.style.display = 'block'; ed.focus(); ed.select();
+}
+function finishEdit(ok){
+  if (!editing) return;
+  const o = find(editing.id);
+  if (ok && o && o.t !== ed.value.trim()){ o.t = ed.value.trim(); commit(editing.before); }
+  editing = null; ed.style.display = 'none'; if (ok) sel = null; render(); paper.focus({ preventScroll: true });
+}
+ed.onkeydown = e => {
+  if (e.key === 'Enter' && !e.isComposing){ finishEdit(true); e.preventDefault(); }
+  if (e.key === 'Escape') finishEdit(false);
+};
+ed.onblur = () => finishEdit(true);
+
+function del(){
+  if (!sel) return;
+  const before = snapshot();
+  S.boxes = S.boxes.filter(b => b.id !== sel);
+  S.arrows = S.arrows.filter(a => a.id !== sel && a.a !== sel && a.b !== sel);
+  sel = null; commit(before); render();
+}
+function undo(){
+  if (editing) finishEdit(false);
+  if (!hist.length) return;
+  S = JSON.parse(hist.pop()); sel = null; render();
+}
+function setMode(m){
+  mode = m; $('mBox').setAttribute('aria-pressed', m === 'box'); $('mArrow').setAttribute('aria-pressed', m === 'arrow');
+  paper.classList.toggle('link', m === 'arrow');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.target === ed) return;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z'){ undo(); e.preventDefault(); return; }
+  if (document.activeElement !== paper) return;
+  const b = sel && box(sel);
+  if (e.key === 'Delete' || e.key === 'Backspace'){ del(); e.preventDefault(); }
+  else if (e.key === 'Enter'){
+    if (sel) startEdit(sel);
+    else { // キーボードで新しい箱
+      const before = snapshot(), k = S.boxes.length % 10;
+      const nb = { id: S.n++, x: 1 + k * 2, y: 1 + k * 2, w: 10, h: 4, t: '' };
+      S.boxes.push(nb); sel = nb.id; commit(before); render(); startEdit(nb.id);
+    }
+    e.preventDefault();
+  }
+  else if (e.key === 'Escape'){ sel = null; render(); }
+  else if (b && e.key.startsWith('Arrow')){
+    const dx = { ArrowLeft: -1, ArrowRight: 1 }[e.key] || 0, dy = { ArrowUp: -1, ArrowDown: 1 }[e.key] || 0, before = snapshot();
+    if (e.shiftKey){ b.w = clamp(b.w + dx, 1, GW - b.x); b.h = clamp(b.h + dy, 1, GH - b.y); }
+    else { b.x = clamp(b.x + dx, 0, GW - b.w); b.y = clamp(b.y + dy, 0, GH - b.h); }
+    commit(before); render(); e.preventDefault();
+  }
+});
+
+$('mBox').onclick = () => setMode('box');
+$('mArrow').onclick = () => setMode('arrow');
+$('undo').onclick = undo;
+$('clear').onclick = () => { if (!S.boxes.length) return; const before = snapshot(); S = { boxes: [], arrows: [], n: 1 }; sel = null; commit(before); render(); };
+
+// AIに渡すテキスト
+function toText(){
+  const L = ['Layout on grid. Units = cells. [x,y w×h], origin top-left.', ''];
+  const inside = b => S.boxes.filter(o => o !== b && o.x <= b.x && o.y <= b.y && o.x + o.w >= b.x + b.w && o.y + o.h >= b.y + b.h)
+                            .sort((p, q) => p.w * p.h - q.w * q.h)[0];
+  [...S.boxes].sort((a, b) => a.y - b.y || a.x - b.x).forEach(b => {
+    const p = inside(b);
+    L.push(`#${b.id} "${b.t}" [${b.x},${b.y} ${b.w}×${b.h}]` + (p ? ` in #${p.id}` : ''));
+  });
+  if (S.arrows.length){
+    L.push('', 'Arrows:');
+    S.arrows.forEach(a => L.push(`#${a.a} -> #${a.b}` + (a.t ? ` "${a.t}"` : '')));
+  }
+  return L.join('\n');
+}
+$('copy').onclick = async () => {
+  try { await navigator.clipboard.writeText(toText()); $('copy').textContent = 'Copied'; }
+  catch { $('copy').textContent = 'Error'; }
+  setTimeout(() => $('copy').textContent = 'Copy', 1200);
+};
+
+// PNG書き出し（中身の範囲＋1マスの余白で切り抜き、2倍）
+$('save').onclick = () => {
+  let x0 = 0, y0 = 0, x1 = GW, y1 = GH;
+  if (S.boxes.length){
+    x0 = Math.max(0, Math.min(...S.boxes.map(b => b.x)) - 1); y0 = Math.max(0, Math.min(...S.boxes.map(b => b.y)) - 1);
+    x1 = Math.min(GW, Math.max(...S.boxes.map(b => b.x + b.w)) + 1); y1 = Math.min(GH, Math.max(...S.boxes.map(b => b.y + b.h)) + 1);
+  }
+  const w = (x1 - x0) * C, h = (y1 - y0) * C, k = 2;
+  const src = `<svg xmlns="http://www.w3.org/2000/svg" width="${w*k}" height="${h*k}" viewBox="${x0*C} ${y0*C} ${w} ${h}">`
+    + `<style>@font-face{font-family:"KHDot";src:url(data:font/woff;base64,${FONT}) format("woff");}</style>`
+    + svgBody(null).replace('<rect width="100%" height="100%" fill="#fff"/><rect width="100%" height="100%" fill="url(#g1)"/><rect width="100%" height="100%" fill="url(#g5)"/>',
+        `<rect x="${x0*C}" y="${y0*C}" width="${w}" height="${h}" fill="#fff"/><rect x="${x0*C}" y="${y0*C}" width="${w}" height="${h}" fill="url(#g1)"/><rect x="${x0*C}" y="${y0*C}" width="${w}" height="${h}" fill="url(#g5)"/>`)
+    + `</svg>`;
+  const img = new Image();
+  img.onload = () => {
+    const cv = document.createElement('canvas'); cv.width = w * k; cv.height = h * k;
+    cv.getContext('2d').drawImage(img, 0, 0);
+    const a = document.createElement('a');
+    a.download = `layout_${x1 - x0}x${y1 - y0}.png`; a.href = cv.toDataURL('image/png'); a.click();
+  };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(src);
+};
+
+render();
+</script>
+</body>
+</html>
