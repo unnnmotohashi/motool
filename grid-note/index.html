@@ -17,7 +17,16 @@
   button[aria-pressed=true] { background:var(--ink); border-color:var(--ink); color:#fff; }
   button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
-  main { padding:12px; overflow:auto; }
+  main { display:flex; gap:12px; align-items:flex-start; padding:12px; }
+  .pane { flex:1; min-width:0; overflow:auto; }
+  aside { flex:none; width:280px; max-height:calc(100vh - 80px); overflow:auto; position:sticky; top:12px; background:var(--panel); border:1px solid var(--line); border-radius:4px; }
+  aside .hd { padding:10px; color:var(--sub); }
+  .note { padding:8px 10px 10px; border-top:1px solid var(--line); border-left:2px solid transparent; }
+  .note.on { border-left-color:var(--accent); }
+  .note .t { display:block; margin-bottom:6px; }
+  .note .t i { font-style:normal; color:var(--sub); margin-right:6px; }
+  .note textarea { display:block; width:100%; min-height:40px; resize:vertical; padding:4px 6px; border:1px solid var(--line); border-radius:4px; font:12px/1.5 system-ui, sans-serif; color:var(--ink); }
+  @media (max-width:700px){ main { flex-direction:column; align-items:stretch; } aside { width:auto; max-height:none; position:static; } }
   .wrap { position:relative; width:max-content; background:var(--panel); border:1px solid var(--line); border-radius:4px; overflow:hidden; }
   #paper { display:block; touch-action:none; cursor:crosshair; }
   #paper.link { cursor:alias; }
@@ -41,10 +50,13 @@
   <button class="primary" id="save">Save</button>
 </header>
 <main>
-  <div class="wrap">
-    <svg id="paper" tabindex="0" role="application" aria-label="Paper" xmlns="http://www.w3.org/2000/svg"></svg>
-    <input id="ed" aria-label="Label">
+  <div class="pane">
+    <div class="wrap">
+      <svg id="paper" tabindex="0" role="application" aria-label="Paper" xmlns="http://www.w3.org/2000/svg"></svg>
+      <input id="ed" aria-label="Label">
+    </div>
   </div>
+  <aside aria-label="Notes"><div class="hd">Notes</div><div id="notes"></div></aside>
 </main>
 <script>
 const FONT='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';
@@ -119,6 +131,33 @@ function render(){
     s += `<line x1="${x1}" y1="${y1}" x2="${drag.px * C}" y2="${drag.py * C}" stroke="${ACC}" stroke-width="1.5" stroke-dasharray="4 3" pointer-events="none"/>`;
   }
   paper.innerHTML = s;
+  renderNotes();
+}
+
+// 右の説明欄：箱ごとに1項目。入力中の欄は作り直さない
+const notesEl = $('notes'), items = new Map();
+let noteBefore = null;
+function renderNotes(){
+  const ids = new Set(S.boxes.map(b => b.id));
+  for (const [id, el] of items) if (!ids.has(id)){ el.remove(); items.delete(id); }
+  [...S.boxes].sort((a, b) => a.id - b.id).forEach((b, i) => {
+    let el = items.get(b.id);
+    if (!el){
+      el = document.createElement('div'); el.className = 'note';
+      el.innerHTML = `<span class="t"><i></i><span></span></span><textarea rows="2" aria-label="Note #${b.id}"></textarea>`;
+      const ta = el.querySelector('textarea');
+      ta.onfocus = () => { noteBefore = snapshot(); if (sel !== b.id){ sel = b.id; render(); } };
+      ta.oninput = () => { const o = box(b.id); if (o) o.d = ta.value; };
+      ta.onblur = () => { if (noteBefore) commit(noteBefore); noteBefore = null; };
+      items.set(b.id, el);
+    }
+    if (notesEl.children[i] !== el) notesEl.insertBefore(el, notesEl.children[i] || null);   // id順
+    el.querySelector('i').textContent = '#' + b.id;
+    el.querySelector('.t span').textContent = b.t;
+    const ta = el.querySelector('textarea');
+    if (document.activeElement !== ta && ta.value !== (b.d || '')) ta.value = b.d || '';
+    el.classList.toggle('on', b.id === sel);
+  });
 }
 
 const pt = e => { const r = paper.getBoundingClientRect(); return { x: (e.clientX - r.left) / C, y: (e.clientY - r.top) / C }; };
@@ -229,7 +268,7 @@ function setMode(m){
 }
 
 document.addEventListener('keydown', e => {
-  if (e.target === ed) return;
+  if (e.target === ed || e.target.tagName === 'TEXTAREA') return;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z'){ undo(); e.preventDefault(); return; }
   if (document.activeElement !== paper) return;
   const b = sel && box(sel);
@@ -265,6 +304,7 @@ function toText(){
   [...S.boxes].sort((a, b) => a.y - b.y || a.x - b.x).forEach(b => {
     const p = inside(b);
     L.push(`#${b.id} "${b.t}" [${b.x},${b.y} ${b.w}×${b.h}]` + (p ? ` in #${p.id}` : ''));
+    if (b.d && b.d.trim()) b.d.trim().split('\n').forEach(l => L.push('    ' + l));
   });
   if (S.arrows.length){
     L.push('', 'Arrows:');
@@ -291,10 +331,31 @@ $('save').onclick = () => {
     + svgBody(null).replace('<rect width="100%" height="100%" fill="#fff"/><rect width="100%" height="100%" fill="url(#g1)"/><rect width="100%" height="100%" fill="url(#g5)"/>',
         `<rect x="${x0*C}" y="${y0*C}" width="${w}" height="${h}" fill="#fff"/><rect x="${x0*C}" y="${y0*C}" width="${w}" height="${h}" fill="url(#g1)"/><rect x="${x0*C}" y="${y0*C}" width="${w}" height="${h}" fill="url(#g5)"/>`)
     + `</svg>`;
+  // 説明の列（1倍の座標で行を組む）
+  const NW = 280, LH = 18, FONT_CSS = '12px KHDot, system-ui, sans-serif';
+  const rows = [];
+  mctx.font = FONT_CSS;
+  const wrap = (str, max) => { const out = []; let line = '';
+    for (const ch of str){ if (mctx.measureText(line + ch).width > max && line){ out.push(line); line = ''; } line += ch; }
+    out.push(line); return out; };
+  [...S.boxes].sort((p, q) => p.id - q.id).filter(b => b.d && b.d.trim()).forEach(b => {
+    if (rows.length) rows.push(null);
+    wrap(`#${b.id} ${b.t}`, NW - 24).forEach(t => rows.push({ t, c: INK }));
+    b.d.trim().split('\n').forEach(l => wrap(l, NW - 36).forEach(t => rows.push({ t, c: SUB, x: 12 })));
+  });
+  const nw = rows.length ? NW : 0, H = Math.max(h, rows.length ? rows.length * LH + 24 : 0);
   const img = new Image();
   img.onload = () => {
-    const cv = document.createElement('canvas'); cv.width = w * k; cv.height = h * k;
-    cv.getContext('2d').drawImage(img, 0, 0);
+    const cv = document.createElement('canvas'); cv.width = (w + nw) * k; cv.height = H * k;
+    const cx = cv.getContext('2d');
+    cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
+    cx.drawImage(img, 0, 0);
+    if (nw){
+      cx.scale(k, k);
+      cx.fillStyle = '#c9ced6'; cx.fillRect(w, 0, 1, H);
+      cx.font = FONT_CSS; cx.textBaseline = 'top';
+      rows.forEach((r, i) => { if (!r) return; cx.fillStyle = r.c; cx.fillText(r.t, w + 12 + (r.x || 0), 12 + i * LH + 3); });
+    }
     const a = document.createElement('a');
     a.download = `layout_${x1 - x0}x${y1 - y0}.png`; a.href = cv.toDataURL('image/png'); a.click();
   };
