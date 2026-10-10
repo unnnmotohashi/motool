@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anachord</title>
+<style>
+  @font-face { font-family:"KHDot"; src:url(data:font/woff;base64,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) format("woff"); }
+  :root { --bg:#e6e8eb; --panel:#ffffff; --ink:#1d2127; --sub:#6b7380; --line:#c9ced6; --accent:#2f6fde; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"KHDot", system-ui, sans-serif; background:var(--bg); color:var(--ink); font-size:12px; line-height:1; -webkit-font-smoothing:none; font-smooth:never; }
+  header { display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px 14px; background:var(--panel); border-bottom:1px solid var(--line); }
+  .top { color:var(--sub); text-decoration:none; margin-right:6px; }
+  .top:hover { color:var(--ink); }
+  .grow { flex:1; }
+  button { padding:6px 12px; border:1px solid var(--line); border-radius:4px; background:#f5f6f8; font:inherit; color:var(--ink); cursor:pointer; }
+  button:disabled { opacity:.4; cursor:default; }
+  input, textarea { font:inherit; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:4px; padding:5px 6px; }
+  textarea { width:100%; min-height:72px; resize:vertical; line-height:1.4; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .lbl { color:var(--sub); }
+
+  main { display:grid; grid-template-columns:180px minmax(0,1fr); gap:12px; padding:12px; align-items:start; }
+  main.fold { grid-template-columns:44px minmax(0,1fr); }
+  @media (max-width:700px){ main, main.fold { grid-template-columns:1fr; } }
+  .view { background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:12px; min-width:0; }
+  #right { display:flex; flex-direction:column; gap:12px; min-width:0; }
+
+  #songs { padding:8px; }
+  #songs .hd { display:flex; gap:6px; margin-bottom:8px; }
+  #songs .hd button { padding:6px 9px; }
+  .ls { display:flex; flex-direction:column; gap:2px; }
+  .ls .row { display:flex; }
+  .ls .it { flex:1; min-width:0; text-align:left; border:0; background:none; padding:6px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .ls .it[aria-current=true] { background:var(--ink); color:#fff; }
+  .ls small { display:block; margin-top:4px; color:var(--sub); font-size:12px; overflow:hidden; text-overflow:ellipsis; }
+  .ls .it[aria-current=true] small { color:var(--line); }
+  .x { border:0; background:none; color:var(--sub); padding:6px; }
+
+  .meta { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  #title { flex:2 1 140px; min-width:0; }
+  #artist { flex:1 1 100px; min-width:0; }
+  .meta button, .sh button { padding:5px 8px; }
+  #split { min-width:52px; }
+  .meta + .meta { margin-top:8px; }
+  #bpm { width:44px; }
+  button[aria-pressed=true] { background:var(--ink); border-color:var(--ink); color:#fff; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .sec { margin-top:14px; }
+  .line { display:grid; grid-template-columns:16px minmax(0,1fr); gap:4px; margin-top:6px; }
+  .line.nomel { grid-template-columns:minmax(0,1fr); }
+  .gut { position:relative; }
+  .gut span { position:absolute; right:0; color:var(--sub); }
+  .lane { position:relative; min-width:0; }
+  .roll { position:relative; box-sizing:content-box; height:132px; margin:0 3px 4px 0; border:1px solid var(--line); border-radius:4px; background:var(--rollbg); cursor:crosshair; touch-action:none; overflow:hidden; }
+  .nt { position:absolute; height:6px; background:var(--ink); border-radius:1px; cursor:move; }
+  #ph { position:absolute; top:0; bottom:0; width:2px; margin-left:-1px; background:var(--accent); pointer-events:none; z-index:2; }
+  .sh { display:flex; gap:6px; align-items:center; margin-bottom:6px; }
+  .sn { width:84px; }
+  .grid { display:grid; grid-template-columns:repeat(64, minmax(0,1fr)); }
+  .cell { display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:4px; touch-action:pan-y; height:52px; margin-right:3px; min-width:0; border:1px solid var(--line); border-radius:4px; background:#fff; padding:0 5px; overflow:hidden; white-space:nowrap; text-align:left; }
+  .cell.bl { border-left:2px solid var(--sub); }
+  .cell[aria-pressed=true] { background:var(--ink); border-color:var(--ink); color:#fff; }
+  .cell { position:relative; }
+  .cell .dg { font-size:24px; }
+  .cell .dg small { font-size:12px; }
+  .eg { position:absolute; top:0; right:0; bottom:0; width:8px; cursor:ew-resize; }
+  .eg:hover, .cell.drag .eg { background:linear-gradient(to right, transparent 5px, var(--accent) 5px); }
+  .cell .rn { color:var(--sub); }
+  .cell[aria-pressed=true] .rn { color:var(--line); }
+  .cell.play { box-shadow:inset 0 -3px 0 var(--accent); }
+  .cell.mm { box-shadow:inset 0 -3px 0 var(--sub); }
+  .cell:focus-visible { outline-offset:-2px; }
+  .cell.ed { display:flex; align-items:center; padding:3px; border-color:var(--ink); }
+  #ed { width:100%; min-width:0; padding:4px; }
+  #ed.err { border:1px dashed var(--ink); }
+  #addSec { margin-top:14px; }
+
+  #pick { display:flex; flex-direction:column; gap:6px; }
+  .pr { display:flex; flex-wrap:wrap; gap:4px; align-items:center; }
+  .pr .lbl { width:36px; }
+  .pr button { padding:5px 6px; min-width:36px; }
+  .pr button[aria-pressed=true] { background:var(--ink); border-color:var(--ink); color:#fff; }
+
+  #info { min-height:72px; display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
+  .seq { font-size:24px; line-height:1.2; }
+  .memo { width:100%; display:flex; flex-direction:column; gap:6px; }
+  .mr { display:flex; gap:6px; }
+  #mname { flex:1; min-width:0; }
+  .mt { width:100%; text-align:left; background:#fff; line-height:1.3; }
+  .mt small { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin-top:4px; color:var(--sub); font-size:12px; white-space:pre-wrap; }
+
+  #midi { min-height:12px; margin-bottom:8px; }
+  #keys { position:relative; height:72px; user-select:none; touch-action:none; }
+  .k { position:absolute; top:0; bottom:0; display:flex; align-items:flex-end; justify-content:center; padding-bottom:5px; color:#fff; overflow:hidden; border:1px solid var(--line); border-radius:0 0 3px 3px; background:#fff; }
+  .k.b { bottom:40%; background:var(--ink); border-color:var(--ink); z-index:1; }
+  .k.on { background:var(--sub); border-color:var(--sub); }
+  .k.mi::after { content:""; position:absolute; left:50%; bottom:6px; width:6px; height:6px; margin-left:-3px; background:var(--ink); }
+  .k.b.mi::after, .k.on.mi::after { background:#fff; }
+
+  .list { position:absolute; z-index:10; max-height:260px; overflow:auto; background:#fff; border:1px solid var(--ink); }
+  .list[hidden] { display:none; }
+  .list button { display:block; width:100%; text-align:left; border:0; border-radius:0; background:#fff; padding:5px 8px; white-space:nowrap; }
+  .list button:hover, .list button:focus-visible { background:var(--ink); color:#fff; outline:0; }
+  .list button[aria-selected=true] { text-decoration:underline; }
+</style>
+</head>
+<body>
+<header>
+  <a class="top" href="../">Top</a>
+  <span class="grow"></span>
+  <button type="button" id="imp">Import</button>
+  <button type="button" id="exp">Export</button>
+  <input type="file" id="file" accept=".json,application/json" hidden>
+</header>
+<main id="main">
+  <nav class="view" id="songs" aria-label="Songs"></nav>
+  <div id="right">
+    <section class="view" id="prog" aria-label="Progression"></section>
+    <section class="view" id="pick" aria-label="Chord"></section>
+    <section class="view" id="info" aria-label="Info"></section>
+    <section class="view" aria-label="Keyboard"><div id="midi" aria-live="polite"></div><div id="keys"></div></section>
+  </div>
+</main>
+<div class="list" id="menu" role="listbox" hidden></div>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+const md = n => (n % 12 + 12) % 12;
+const uid = () => Math.random().toString(36).slice(2, 9);
+
+// ---------- 理論 ----------
+const KEYS = ['C','Db','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
+const DEG = ['I','bII','II','bIII','III','IV','#IV','V','bVI','VI','bVII','VII'];
+const Q = { '':[0,4,7], m:[0,3,7], '7':[0,4,7,10], M7:[0,4,7,11], m7:[0,3,7,10], 'm7-5':[0,3,6,10], dim7:[0,3,6,9],
+  aug:[0,4,8], sus4:[0,5,7], '7sus4':[0,5,7,10], '6':[0,4,7,9], m6:[0,3,7,9], add9:[0,4,7,14], mM7:[0,3,7,11],
+  dim:[0,3,6], sus2:[0,2,7], '9':[0,4,7,10,14], m9:[0,3,7,10,14], M9:[0,4,7,11,14] };
+// ボタンに並べる順
+const QL = ['', 'm', '7', 'M7', 'm7', 'm7-5', 'dim', 'dim7', 'aug', 'sus2', 'sus4', '7sus4', '6', 'm6', 'add9', 'mM7'];
+// テンション（ルートからの半音）。表記は V7(b9,13) のように括弧でまとめる
+const TN = { b9:13, '9':14, '#9':15, '11':17, '#11':18, b13:20, '13':21 };
+const TL = ['b9','9','#9','11','#11','b13','13'];   // 並び順（Object.keys だと数字のキーが先に来るので明示）
+// 空のマスに度数を入れたときの種類（ダイアトニック）
+const DIAQ = { 0:'', 2:'m', 4:'m', 5:'', 7:'', 9:'m', 11:'m7-5' };
+// 入力のゆれを正式な表記にそろえる
+const QA = { maj7:'M7', m7b5:'m7-5', '+':'aug', min:'m' };
+const RN = { I:0, II:2, III:4, IV:5, V:7, VI:9, VII:11 };
+const AR = ['', 'I','II','III','IV','V','VI','VII'];
+const ROW = 16;   // 1段の拍数（4小節）
+
+// 度数を読む（ローマ数字でも 1〜7 でも可）
+function degOf(s){
+  const m = /^([b#]?)(VII|VI|V|IV|III|II|I|[1-7])/i.exec(s);
+  if (!m) return null;
+  let n = m[2].toUpperCase(); if (/\d/.test(n)) n = AR[+n];
+  return { t: m[1] + n, r: md(RN[n] + (m[1] === 'b' ? -1 : m[1] === '#' ? 1 : 0)), len: m[0].length };
+}
+// 空欄は null、読めないときは undefined
+// テンション部分を読む（"(b9,13)" "b9#11" "(9)" など）。読めなければ null
+function tens(str){
+  let s = str.replace(/-(9|13)/g, 'b$1').replace(/\+(9|11)/g, '#$1').replace(/[(),]/g, '');
+  const out = [];
+  while (s){ const m = /^(b9|#9|#11|b13|9|11|13)/.exec(s); if (!m) return null; out.push(m[1]); s = s.slice(m[1].length); }
+  return out;
+}
+const QK = Object.keys(Q).concat(Object.keys(QA)).sort((a, b) => b.length - a.length);
+function parse(str){
+  const s = String(str).trim().replace(/♭/g, 'b').replace(/♯/g, '#').replace(/\s+/g, '');
+  if (!s) return null;
+  const [a, bs, extra] = s.split('/');
+  if (extra != null) return undefined;
+  const d = degOf(a); if (!d) return undefined;
+  const rest = a.slice(d.len);
+  let q = null, x = null;
+  for (const key of QK) if (rest.startsWith(key) && (x = tens(rest.slice(key.length)))){ q = QA[key] ?? key; break; }
+  if (q == null) return undefined;
+  let b = null;
+  if (bs != null){ const bb = degOf(bs); if (!bb || bb.len !== bs.length) return undefined; b = bb.r; }
+  return mk(d.r, q, b, x);
+}
+// コードを作る。x はテンション名の配列
+function mk(r, q, b, x){
+  const xs = TL.filter(n => (x || []).includes(n));
+  const c = { t: DEG[r] + q + (xs.length ? '(' + xs.join(',') + ')' : ''), r, q };
+  if (xs.length) c.x = xs;
+  if (b != null && b !== r){ c.t += '/' + DEG[b]; c.b = b; }
+  return c;
+}
+const ints = c => Q[c.q].concat((c.x || []).map(n => TN[n]));
+const ck = c => c.r + c.q + (c.x ? '(' + c.x.join(',') + ')' : '') + '/' + (c.b ?? c.r);
+const tones = c => { const t = [...new Set(ints(c).map(x => md(c.r + x)))]; if (c.b != null && !t.includes(c.b)) t.unshift(c.b); return t.map(x => DEG[x]).join(' '); };
+
+// ---------- 状態 ----------
+const STORE = 'anachord';
+const newCell = (len = 4) => ({ id: uid(), len, c: null });
+const newSec = n => ({ id: uid(), name: n, k: null, cells: [newCell(), newCell(), newCell(), newCell()], notes: [] });
+const newSong = () => ({ id: uid(), title: '', artist: '', key: 0, bpm: 120, secs: [newSec('A')], memos: [] });
+// 読み込んだ曲を整える（以前の小節形式もマスの列に直す）
+function norm(s){
+  s.title = String(s.title || ''); s.artist = String(s.artist || ''); s.key = md(+s.key || 0);
+  s.memos = Array.isArray(s.memos) ? s.memos : [];
+  s.bpm = Math.max(30, Math.min(300, Math.round(+s.bpm) || 120));
+  s.secs.forEach(sec => {
+    sec.notes = Array.isArray(sec.notes) ? sec.notes.filter(n => n && isFinite(n.p) && isFinite(n.n) && n.len > 0).map(n => ({ id: n.id || uid(), p: +n.p, len: +n.len, n: Math.round(+n.n) })) : [];
+    sec.id = sec.id || uid(); sec.name = String(sec.name ?? ''); sec.k = sec.k == null ? null : md(+sec.k);
+    if (!Array.isArray(sec.cells)){
+      sec.cells = [];
+      (sec.bars || []).forEach(bar => ([[4],[2,2],[1,1,1,1],[2.5,1.5]][bar.p] || [4]).forEach((len, k) =>
+        sec.cells.push({ id: bar.id + '.' + k, len, c: bar.c && bar.c[k] })));
+      delete sec.bars;
+    }
+    sec.cells = sec.cells.filter(x => x && x.id).map(x => ({ id: x.id, len: Math.max(.25, Math.round((+x.len || 4) * 4) / 4), c: x.c && x.c.t ? parse(x.c.t) || null : null }));
+    if (!sec.cells.length) sec.cells = [newCell()];
+  });
+  return s;
+}
+let D = null;
+try { D = JSON.parse(localStorage.getItem(STORE)); } catch {}
+if (!D || !Array.isArray(D.songs)) D = { songs: [], cur: null, fold: false, mel: true };
+if (D.mel == null) D.mel = true;
+D.songs = D.songs.filter(s => s && s.id && Array.isArray(s.secs) && s.secs.length).map(norm);
+if (!D.songs.length){ const s = newSong(); D.songs.push(s); D.cur = s.id; }
+const song = () => D.songs.find(s => s.id === D.cur) || D.songs[0];
+const keyOf = (s, sec) => sec.k ?? s.key;
+
+// 曲の全マスを順に並べる。st は曲頭からの拍（セクションは段の頭から始まる）
+function flat(s){
+  const out = []; let base = 0;
+  s.secs.forEach(sec => {
+    let p = 0;
+    sec.cells.forEach(cell => { out.push({ id: cell.id, sec, cell, c: cell.c, st: base + p }); p += cell.len; });
+    base += Math.max(1, Math.ceil(p / ROW)) * ROW;
+  });
+  return out;
+}
+function range(s, a, z){
+  const f = flat(s);
+  let i = f.findIndex(x => x.id === a), j = f.findIndex(x => x.id === z);
+  if (i < 0 || j < 0) return null;
+  if (i > j) [i, j] = [j, i];
+  return { f, i, j, ids: [f[i].id, f[j].id] };
+}
+const seqOf = r => r.f.slice(r.i, r.j + 1).filter(x => x.c).map(x => x.c);
+// メモした範囲の進行を控えておく（マスを消しても照合に使えるように）
+const fixSeqs = s => s.memos.forEach(m => { const r = range(s, m.a, m.z); if (r) m.seq = seqOf(r).map(ck); });
+
+let sel = null, editing = null, editText = '', ending = false, hist = [], fieldBefore = null;
+const snap = () => JSON.stringify(D);
+const persist = () => { try { localStorage.setItem(STORE, snap()); } catch {} };
+function change(fn){
+  const before = snap(); fn(); fixSeqs(song());
+  if (snap() !== before){ hist.push(before); if (hist.length > 60) hist.shift(); persist(); }
+  render();
+}
+function undo(){ if (!hist.length) return; D = JSON.parse(hist.pop()); editing = null; persist(); render(); }
+const curRange = () => sel && range(song(), sel.a, sel.z);
+// 1マスだけ選んでいるときのマス
+const single = () => { const r = curRange(); return r && r.i === r.j ? r.f[r.i] : null; };
+
+// ---------- 音 ----------
+const dist = (a, b) => a.reduce((s, x) => s + Math.min(...b.map(y => Math.abs(x - y))), 0) + b.reduce((s, y) => s + Math.min(...a.map(x => Math.abs(x - y))), 0);
+const abs = (c, k) => ({ root: md(k + c.r), ints: ints(c), bass: md(k + (c.b ?? c.r)) });
+function voice(a, prev){
+  let pcs = [...new Set(a.ints.map(x => md(a.root + x)))].sort((x, y) => x - y);
+  if (a.bass === a.root && a.ints.some(x => x === 10 || x === 11)) pcs = pcs.filter(x => x !== a.root);
+  if (pcs.length > 4 && a.ints.includes(7)) pcs = pcs.filter(x => x !== md(a.root + 7));
+  let best = null, bs = 1e9;
+  for (let r = 0; r < pcs.length; r++){
+    const o = pcs.slice(r).concat(pcs.slice(0, r));
+    for (let st = 53; st <= 67; st++){
+      if (md(st) !== o[0]) continue;
+      const v = [st];
+      for (let k = 1; k < o.length; k++){ let n = v[k-1] + 1; while (md(n) !== o[k]) n++; v.push(n); }
+      if (v[v.length - 1] > 79) continue;
+      const sc = Math.abs(v.reduce((s, x) => s + x, 0) / v.length - 66) * .6 + (prev ? dist(v, prev.up) : 0);
+      if (sc < bs){ bs = sc; best = v; }
+    }
+  }
+  return { up: best || [], bass: 40 + md(a.bass - 4) };
+}
+
+let ac = null, comp, master, wave;
+function audio(){
+  if (!ac){
+    ac = new (window.AudioContext || window.webkitAudioContext)();
+    comp = ac.createDynamicsCompressor(); comp.connect(ac.destination);
+    const re = new Float32Array([0, 1, .55, .3, .2, .1, .07, .04, .02]);
+    wave = ac.createPeriodicWave(re, new Float32Array(re.length));
+    master = ac.createGain(); master.connect(comp);
+  }
+  if (ac.state === 'suspended') ac.resume();
+}
+function hush(){
+  const m = master; m.gain.setTargetAtTime(0, ac.currentTime, .03); setTimeout(() => m.disconnect(), 400);
+  master = ac.createGain(); master.connect(comp);
+}
+function tone(n, t, len, vel, dest = master){
+  const f = 440 * 2 ** ((n - 69) / 12), g = ac.createGain(), lp = ac.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.setValueAtTime(Math.min(f * 7, 9000), t);
+  lp.frequency.setTargetAtTime(Math.max(f * 1.5, 250), t, .5);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(vel, t + .004);
+  g.gain.setTargetAtTime(vel * .35, t + .004, .12);
+  g.gain.setTargetAtTime(0, t + .3, .6 + (84 - n) / 40);
+  g.gain.setTargetAtTime(0, t + len, .06);
+  lp.connect(g); g.connect(dest);
+  for (const dt of [-3, 3]){
+    const o = ac.createOscillator(); o.setPeriodicWave(wave); o.frequency.value = f; o.detune.value = dt;
+    o.connect(lp); o.start(t); o.stop(t + len + .5);
+  }
+  return g;
+}
+function play(c, k){
+  if (P) return;
+  audio(); hush();
+  const v = voice(abs(c, k)), t = ac.currentTime + .02;
+  tone(v.bass, t, 1.6, .2); v.up.forEach(n => tone(n, t, 1.6, .12));
+}
+
+// ---------- 描画 ----------
+function render(){
+  const a = document.activeElement, f = a && a.dataset && a.dataset.f;
+  renderSongs(); renderProg(); renderPick(); renderInfo(); renderKeys();
+  if (editing){ const el = $('ed'); if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }
+  else if (f){ const el = document.querySelector(`[data-f="${f}"]`); if (el && el !== document.activeElement) el.focus({ preventScroll: true }); }
+}
+
+function renderSongs(){
+  $('main').classList.toggle('fold', !!D.fold);
+  let h = `<div class="hd"><button type="button" id="fold" data-f="fold" aria-label="${D.fold ? 'Open list' : 'Close list'}">${D.fold ? '&gt;' : '&lt;'}</button>`
+    + (D.fold ? '' : `<button type="button" id="new" data-f="new">New</button>`) + `</div>`;
+  if (!D.fold) h += `<div class="ls">` + D.songs.map(s =>
+    `<div class="row"><button type="button" class="it" data-song="${s.id}" data-f="g${s.id}" aria-current="${s.id === D.cur}">${esc(s.title || 'Untitled')}${s.artist ? `<small>${esc(s.artist)}</small>` : ''}</button>`
+    + `<button type="button" class="x" data-del="${s.id}" aria-label="Delete ${esc(s.title || 'Untitled')}">x</button></div>`).join('') + `</div>`;
+  $('songs').innerHTML = h;
+}
+
+// Split：1マスなら半分に割る。同じセクションで2マス以上なら1つにまとめる
+function splitState(){
+  const r = curRange(); if (!r) return { label: 'Split', ok: false };
+  if (r.i === r.j) return { label: 'Split', ok: r.f[r.i].cell.len >= .5 };
+  const sec = r.f[r.i].sec;
+  return { label: 'Merge', ok: r.f.slice(r.i, r.j + 1).every(x => x.sec === sec) };
+}
+function doSplit(){
+  const r = curRange(), st = splitState(); if (!r || !st.ok) return;
+  const s = song();
+  if (r.i === r.j){
+    const x = r.f[r.i];
+    change(() => { const cs = x.sec.cells, k = cs.indexOf(x.cell); x.cell.len /= 2; cs.splice(k + 1, 0, newCell(x.cell.len)); });
+    return;
+  }
+  const xs = r.f.slice(r.i, r.j + 1), head = xs[0].cell, gone = new Set(xs.slice(1).map(x => x.id));
+  change(() => {
+    head.len = xs.reduce((n, x) => n + x.cell.len, 0);
+    head.c = (xs.find(x => x.c) || {}).c || null;
+    xs[0].sec.cells = xs[0].sec.cells.filter(c => !gone.has(c.id));
+    s.memos.forEach(m => { if (gone.has(m.a)) m.a = head.id; if (gone.has(m.z)) m.z = head.id; });
+    sel = { a: head.id, z: head.id };
+  });
+  focusSlot(head.id);
+}
+
+// 実音のコード名（Key D の IV → G）
+// シャープ系のキー（D E F# G A B）ではシャープで、それ以外はフラットで書く
+const SHN = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'], FLN = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+const nm = (n, k) => ([2,4,6,7,9,11].includes(k) ? SHN : FLN)[md(n)];
+const real = (c, k) => nm(k + c.r, k) + c.q + (c.x ? '(' + c.x.join(',') + ')' : '') + (c.b != null ? '/' + nm(k + c.b, k) : '');
+
+// ---------- メロディの段（ピアノロール）----------
+const RHI = 16, RLO = -5, RH = 6, NR = RHI - RLO + 1, MS = .25;   // 上は1オクターブ上のIII、下はV。16分で吸着
+const DI = [0,2,4,5,7,9,11];
+const GUT = [...Array(NR)].map((_, i) => md(RHI - i) === 0 ? `<span style="top:${i * RH - 2}px">I</span>` : '').join('');
+(function(){
+  const st = [...Array(NR)].map((_, i) => { const n = md(RHI - i); return `${n === 0 ? '#e4e7eb' : DI.includes(n) ? '#ffffff' : '#f1f2f4'} ${i * RH}px ${(i + 1) * RH}px`; });
+  document.documentElement.style.setProperty('--rollbg',
+    `repeating-linear-gradient(to right, var(--line) 0 1px, transparent 1px 25%), repeating-linear-gradient(to right, #eceef1 0 1px, transparent 1px 6.25%), linear-gradient(${st.join(',')})`);
+})();
+const mbase = k => 60 + (k > 6 ? k - 12 : k);
+
+const dgHtml = c => { const i = c.t.indexOf('('), j = c.t.indexOf(')'); return i < 0 ? esc(c.t) : esc(c.t.slice(0, i)) + `<small>${esc(c.t.slice(i, j + 1))}</small>` + esc(c.t.slice(j + 1)); };
+function renderProg(){
+  const s = song(), r = curRange();
+  if (sel && !r) sel = null;
+  const on = new Set(r ? r.f.slice(r.i, r.j + 1).map(x => x.id) : []);
+  const mm = new Set();
+  s.memos.forEach(m => { const q = range(s, m.a, m.z); if (q) q.f.slice(q.i, q.j + 1).forEach(x => mm.add(x.id)); });
+  const sp = splitState();
+
+  let h = `<div class="meta"><input id="title" data-f="title" aria-label="Title" placeholder="Title" value="${esc(s.title)}">`
+    + `<input id="artist" data-f="artist" aria-label="Artist" placeholder="Artist" value="${esc(s.artist)}">`
+    + `<span class="lbl">Key</span><button type="button" id="keyBtn" data-f="key" aria-haspopup="listbox" aria-label="Key">${KEYS[s.key]}</button></div>`
+    + `<div class="meta"><button type="button" class="primary" id="play" data-f="play">${P ? 'Stop' : 'Play'}</button>`
+    + `<button type="button" id="loop" data-f="loop" aria-pressed="${!!D.loop}">Loop</button>`
+    + `<span class="lbl">BPM</span><input id="bpm" data-f="bpm" aria-label="BPM" inputmode="numeric" value="${s.bpm}">`
+    + `<button type="button" id="mel" data-f="mel" aria-pressed="${!!D.mel}">Melody</button><span class="grow"></span>`
+    + `<button type="button" id="split" data-f="split"${sp.ok ? '' : ' disabled'}>${sp.label}</button></div>`;
+  s.secs.forEach(sec => {
+    const k = keyOf(s, sec);
+    h += `<div class="sec"><div class="sh"><input class="sn" data-sec="${sec.id}" data-f="n${sec.id}" aria-label="Section" value="${esc(sec.name)}">`
+      + `<button type="button" data-sk="${sec.id}" data-f="k${sec.id}" aria-haspopup="listbox" aria-label="Section key">${sec.k == null ? '-' : KEYS[sec.k]}</button>`
+      + `<span class="grow"></span><button type="button" data-add="${sec.id}" data-f="a${sec.id}" aria-label="Add bar">+</button>`
+      + `<button type="button" data-rm="${sec.id}" data-f="r${sec.id}" aria-label="Remove last">-</button>`
+      + `<button type="button" class="x" data-rmsec="${sec.id}" data-f="x${sec.id}" aria-label="Delete section">x</button></div>`;
+    const tot = sec.cells.reduce((n, c) => n + c.len, 0), L = Math.max(1, Math.ceil(tot / ROW));
+    const cf = Array(L).fill(''), nf = Array(L).fill('');
+    // 4小節で折り返す。段をまたぐマスは分けて描く
+    let p = 0;
+    sec.cells.forEach(cell => {
+      const end = p + cell.len;
+      for (let q = p, n = 0; q < end; n++){
+        const l = Math.floor(q / ROW), e = Math.min(end, (l + 1) * ROW);
+        const pos = `grid-column:${(q % ROW) * 4 + 1} / span ${(e - q) * 4}`;
+        if (cell.id === editing && n === 0)
+          cf[l] += `<span class="cell ed" style="${pos}"><input id="ed" aria-label="Chord" autocomplete="off" value="${esc(editText)}"></span>`;
+        else
+          cf[l] += `<button type="button" class="cell${q % 4 === 0 ? ' bl' : ''}${mm.has(cell.id) ? ' mm' : ''}${cell.id === playId ? ' play' : ''}" style="${pos}" data-s="${cell.id}" data-f="s${cell.id}${n ? '-' + n : ''}"`
+            + ` aria-pressed="${on.has(cell.id)}" aria-label="${cell.c ? esc(cell.c.t) : 'Empty'}">`
+            + (n === 0 && cell.c ? `<span class="dg">${dgHtml(cell.c)}</span><span class="rn">${esc(real(cell.c, k))}</span>` : '')
+            + (e === end ? `<span class="eg" data-edge="${cell.id}" aria-hidden="true"></span>` : '') + `</button>`;
+        q = e;
+      }
+      p = end;
+    });
+    if (D.mel) sec.notes.forEach(nt => {
+      for (let q = nt.p; q < nt.p + nt.len;){
+        const l = Math.floor(q / ROW); if (l >= L) break;
+        const e = Math.min(nt.p + nt.len, (l + 1) * ROW);
+        nf[l] += `<div class="nt" data-note="${nt.id}" style="left:${(q % ROW) / ROW * 100}%;width:${(e - q) / ROW * 100}%;top:${(RHI - nt.n) * RH}px"></div>`;
+        q = e;
+      }
+    });
+    for (let l = 0; l < L; l++)
+      h += `<div class="line${D.mel ? '' : ' nomel'}">` + (D.mel ? `<div class="gut" aria-hidden="true">${GUT}</div>` : '')
+        + `<div class="lane" data-lane="${sec.id}:${l}">` + (D.mel ? `<div class="roll" data-roll="${sec.id}" data-l="${l}" role="group" aria-label="Melody">${nf[l]}</div>` : '')
+        + `<div class="grid">${cf[l]}</div></div></div>`;
+    h += `</div>`;
+  });
+  h += `<button type="button" id="addSec" data-f="addsec">+ Sec</button>`;
+  $('prog').innerHTML = h;
+}
+
+// メロディの入力：空いた所を押すと音を置き、そのまま右へドラッグで長さ。音符はドラッグで移動、クリックで消す
+let nd = null;
+function noteSound(sec, n){ audio(); tone(mbase(keyOf(song(), sec)) + n, ac.currentTime + .01, .4, .16, comp); }
+$('prog').addEventListener('pointerdown', e => {
+  const roll = e.target.closest('.roll'); if (!roll || e.button !== 0) return;
+  e.preventDefault();
+  const sec = song().secs.find(x => x.id === roll.dataset.roll), L = +roll.dataset.l, rc = roll.getBoundingClientRect();
+  const at = ev => ({ b: L * ROW + Math.max(0, Math.min(ROW - .001, (ev.clientX - rc.left - 1) / (rc.width - 2) * ROW)),
+    n: RHI - Math.max(0, Math.min(NR - 1, Math.floor((ev.clientY - rc.top - 1) / RH))) });
+  const a = at(e), hit = e.target.closest('[data-note]'), before = snap();
+  if (hit){ const nt = sec.notes.find(x => x.id === hit.dataset.note); nd = { mode: 'move', sec, nt, a, at, p0: nt.p, n0: nt.n, before, moved: false }; }
+  else { const nt = { id: uid(), p: Math.floor(a.b / MS) * MS, len: .5, n: a.n }; sec.notes.push(nt); nd = { mode: 'new', sec, nt, a, at, before, moved: true }; renderProg(); }
+  noteSound(sec, nd.nt.n);
+});
+window.addEventListener('pointermove', e => {
+  if (!nd) return;
+  const b = nd.at(e), nt = nd.nt;
+  if (nd.mode === 'new') nt.len = Math.max(MS, Math.floor(b.b / MS) * MS + MS - nt.p);
+  else {
+    const dx = Math.round((b.b - nd.a.b) / MS) * MS, dn = b.n - nd.a.n;
+    if (!nd.moved && !dx && !dn) return;
+    nd.moved = true;
+    const n = Math.max(RLO, Math.min(RHI, nd.n0 + dn));
+    if (n !== nt.n) noteSound(nd.sec, n);
+    nt.p = Math.max(0, nd.p0 + dx); nt.n = n;
+  }
+  renderProg();
+});
+window.addEventListener('pointerup', () => {
+  if (!nd) return;
+  const d = nd; nd = null;
+  if (d.mode === 'move' && !d.moved) d.sec.notes = d.sec.notes.filter(x => x !== d.nt);
+  endResize(d.before);
+});
+
+// ---------- 再生 ----------
+// Loop 中：2マス以上を選んでいればその範囲、そうでなければ選んだマスから曲の最後までを繰り返す
+let P = null, playId = null;
+function timeline(s){
+  const ev = [], notes = []; let t = 0;
+  s.secs.forEach(sec => {
+    const k = keyOf(s, sec); let p = 0;
+    sec.cells.forEach(cell => { ev.push({ id: cell.id, t: t + p, sp: p, len: cell.len, c: cell.c, k, sec }); p += cell.len; });
+    sec.notes.forEach(n => { if (n.p < p) notes.push({ t: t + n.p, len: Math.min(n.len, p - n.p), n: n.n, k }); });
+    t += p;
+  });
+  return { ev, notes, end: t };
+}
+function startPlay(){
+  const s = song(), tl = timeline(s), r = curRange();
+  let from = 0, to = tl.end;
+  if (r){
+    const a = tl.ev.find(x => x.id === r.f[r.i].id), z = tl.ev.find(x => x.id === r.f[r.j].id);
+    from = a.t; if (r.i < r.j) to = z.t + z.len;
+  }
+  if (to <= from) return;
+  audio(); hush();
+  const items = tl.ev.filter(x => x.c).map(x => ({ t: x.t, len: x.len, c: x.c, k: x.k }))
+    .concat(tl.notes).filter(x => x.t >= from && x.t < to).sort((a, b) => a.t - b.t);
+  P = { tl, from, to, items, i: 0, v: null, spb: 60 / s.bpm, base: ac.currentTime + .05, loop: !!D.loop };
+  P.timer = setInterval(sched, 50); sched();
+  P.raf = requestAnimationFrame(frame);
+  renderProg();
+}
+function sched(){
+  if (!P) return;
+  const dur = (P.to - P.from) * P.spb, now = ac.currentTime;
+  for (;;){
+    if (P.i >= P.items.length){
+      if (P.loop){ if (P.base + dur < now + .3){ P.base += dur; P.i = 0; P.v = null; continue; } }
+      else if (now > P.base + dur) stopPlay();
+      return;
+    }
+    const it = P.items[P.i], at = P.base + (it.t - P.from) * P.spb;
+    if (at > now + .25) return;
+    const len = Math.min(it.len, P.to - it.t) * P.spb;
+    if (it.c){
+      P.v = voice(abs(it.c, it.k), P.v);
+      tone(P.v.bass, at, len, .2); P.v.up.forEach(n => tone(n, at, len, .1));
+    } else tone(mbase(it.k) + it.n, at, len * .95, .17);
+    P.i++;
+  }
+}
+function frame(){
+  if (!P) return;
+  const dur = (P.to - P.from) * P.spb;
+  let el = ac.currentTime - P.base; if (el < 0) el = P.loop ? el + dur : 0;
+  const beat = P.from + Math.max(0, Math.min(el / P.spb, P.to - P.from - 1e-6));
+  const e = P.tl.ev.find(x => x.t <= beat && beat < x.t + x.len);
+  if (e){
+    if (playId !== e.id){
+      playId = e.id;
+      document.querySelectorAll('.cell.play').forEach(x => x.classList.remove('play'));
+      document.querySelectorAll(`[data-s="${e.id}"]`).forEach(x => x.classList.add('play'));
+      renderKeys();
+    }
+    const ps = e.sp + (beat - e.t), l = Math.floor(ps / ROW), lane = document.querySelector(`[data-lane="${e.sec.id}:${l}"]`);
+    let ph = $('ph'); if (!ph){ ph = document.createElement('div'); ph.id = 'ph'; }
+    if (lane && ph.parentNode !== lane) lane.appendChild(ph);
+    ph.style.left = `calc((100% - 3px) * ${(ps - l * ROW) / ROW})`;
+  }
+  P.raf = requestAnimationFrame(frame);
+}
+function stopPlay(){
+  if (!P) return;
+  clearInterval(P.timer); cancelAnimationFrame(P.raf); P = null; playId = null;
+  hush(); const ph = $('ph'); if (ph) ph.remove();
+  render();
+}
+
+// ---------- コードを選ぶパネル ----------
+function renderPick(){
+  const x = single(), c = x && x.c, off = x ? '' : ' disabled', off2 = c ? '' : ' disabled';
+  const btn = (f, label, on, dis, aria) => `<button type="button" data-p="${f}" data-f="p${f}" aria-pressed="${on}"${dis}${aria ? ` aria-label="${aria}"` : ''}>${label}</button>`;
+  $('pick').innerHTML =
+    `<div class="pr"><span class="lbl">Root</span>` + DEG.map((d, i) => btn('r' + i, d, !!c && c.r === i, off)).join('') + `</div>`
+    + `<div class="pr"><span class="lbl">Type</span>` + QL.map((q, i) => btn('q' + i, q || 'maj', !!c && c.q === q, off2)).join('') + `</div>`
+    + `<div class="pr"><span class="lbl">Tens</span>` + TL.map(n => btn('t' + n, n, !!c && !!c.x && c.x.includes(n), off2, 'Tension ' + n)).join('') + `</div>`
+    + `<div class="pr"><span class="lbl">Bass</span>` + btn('b-', '-', !!c && c.b == null, off2, 'No bass')
+      + DEG.map((d, i) => btn('b' + i, d, !!c && c.b === i, off2)).join('') + `</div>`
+    + `<div class="pr"><span class="lbl"></span>` + btn('x', 'Clear', false, off2) + btn('n', 'Next', false, off) + `</div>`;
+}
+$('pick').onclick = e => {
+  const b = e.target.closest('[data-p]'), x = single(); if (!b || !x) return;
+  const p = b.dataset.p, c = x.c, s = song(), id = x.id;
+  if (p === 'n'){
+    const f = flat(s), i = f.findIndex(v => v.id === id);
+    if (i < f.length - 1){ sel = { a: f[i + 1].id, z: f[i + 1].id }; render(); const y = f[i + 1]; if (y.c) play(y.c, keyOf(s, y.sec)); }
+    return;
+  }
+  let v;
+  if (p === 'x') v = null;
+  else if (p[0] === 'r'){ const r = +p.slice(1); v = c ? mk(r, c.q, c.b, c.x) : mk(r, DIAQ[r] ?? ''); }
+  else if (p[0] === 'q') v = mk(c.r, QL[+p.slice(1)], c.b, c.x);
+  else if (p[0] === 't'){ const n = p.slice(1), x = c.x || []; v = mk(c.r, c.q, c.b, x.includes(n) ? x.filter(y => y !== n) : x.concat(n)); }
+  else v = mk(c.r, c.q, p === 'b-' ? null : +p.slice(1), c.x);
+  change(() => { const y = flat(song()).find(q => q.id === id); if (y) y.cell.c = v; });
+  if (v) play(v, keyOf(s, x.sec));
+};
+
+const memoAt = (s, r) => s.memos.find(m => m.a === r.ids[0] && m.z === r.ids[1]);
+function renderInfo(){
+  const s = song(), r = curRange();
+  if (!r){ $('info').innerHTML = ''; return; }
+  const seq = seqOf(r), key = seq.map(ck).join('|'), here = memoAt(s, r);
+  let h = `<div class="seq">${seq.map(c => esc(c.t)).join(' - ') || '-'}</div>`;
+  if (seq.length === 1) h += `<div class="lbl">${tones(seq[0])}</div>`;
+  if (here) h += `<div class="memo"><div class="mr"><input id="mname" data-f="mname" aria-label="Name" placeholder="Name" value="${esc(here.name)}">`
+    + `<button type="button" class="x" id="mdel" data-f="mdel" aria-label="Delete memo">x</button></div>`
+    + `<textarea id="mtext" data-f="mtext" aria-label="Memo" placeholder="Memo">${esc(here.text)}</textarea></div>`;
+  else if (seq.length) h += `<button type="button" id="madd" data-f="madd">Memo</button>`;
+  const ms = [];
+  if (seq.length) D.songs.forEach(so => so.memos.forEach(m => { if (m !== here && m.seq && m.seq.join('|') === key) ms.push([so, m]); }));
+  if (ms.length) h += `<div class="lbl">Match</div>` + ms.map(([so, m]) =>
+    `<button type="button" class="mt" data-go="${so.id} ${m.id}" data-f="m${m.id}">${esc(so.title || 'Untitled')}${m.name ? ' / ' + esc(m.name) : ''}${m.text ? `<small>${esc(m.text)}</small>` : ''}</button>`).join('');
+  $('info').innerHTML = h;
+}
+
+// ---------- 鍵盤 ----------
+// 鍵盤の C が今のキーの I になる（Key D なら C を押すと D が鳴る）
+const LO = 36, HI = 84, WH = [0,2,4,5,7,9,11];
+const held = new Map();
+(function buildKeys(){
+  const W = [...Array(HI - LO + 1)].filter((_, i) => WH.includes(md(LO + i))).length;
+  let wi = 0, h = '';
+  for (let n = LO; n <= HI; n++){
+    if (WH.includes(md(n))){ h += `<div class="k" data-n="${n}" style="left:${wi / W * 100}%;width:${100 / W}%"></div>`; wi++; }
+    else h += `<div class="k b" data-n="${n}" style="left:${(wi - .3) / W * 100}%;width:${60 / W}%"></div>`;
+  }
+  $('keys').innerHTML = h;
+})();
+function keyNow(){
+  const s = song(), r = curRange();
+  return r ? keyOf(s, r.f[r.j].sec) : s.key;
+}
+function detect(ns, k){
+  if (!ns.length) return '';
+  const pcs = [...new Set(ns.map(md))], low = md(Math.min(...ns));
+  const plain = () => pcs.map(p => DEG[md(p - k)]).join(' ');
+  if (pcs.length < 3) return plain();
+  // 基本の形に含まれない音をテンションとして読む。テンションが少なく、ルートが最低音のものを選ぶ
+  const TI = { 1:'b9', 2:'9', 3:'#9', 5:'11', 6:'#11', 8:'b13', 9:'13' };
+  let best = null, bs = 1e9;
+  for (const r of pcs) for (const q of QL){
+    const qs = [...new Set(Q[q].map(x => md(r + x)))];
+    if (!qs.every(x => pcs.includes(x))) continue;
+    const ex = pcs.filter(x => !qs.includes(x)).map(x => TI[md(x - r)]);
+    if (ex.some(x => !x)) continue;
+    const sc = ex.length * 2 + (r !== low ? 1 : 0) - Q[q].length * .1;
+    if (sc < bs){ bs = sc; best = mk(md(r - k), q, md(low - k), ex); }
+  }
+  return best ? best.t : plain();
+}
+function renderKeys(){
+  const s = song(), r = curRange(), x = playId ? slotOf(playId) : r && r.f.find(v => v.id === sel.z);
+  const lit = new Set(), k = x ? keyOf(s, x.sec) : keyNow();
+  if (x && x.c){ const v = voice(abs(x.c, 0)); lit.add(v.bass); v.up.forEach(n => lit.add(n)); }
+  document.querySelectorAll('.k').forEach(el => {
+    const n = +el.dataset.n, on = lit.has(n);
+    el.classList.toggle('on', on); el.classList.toggle('mi', held.has(n));
+    el.textContent = on ? nm(n + k, k) : '';   // 鳴っている音の名前
+  });
+  $('midi').textContent = detect([...held.keys()], 0);
+}
+$('keys').onpointerdown = e => {
+  const k = e.target.closest('.k'); if (!k) return;
+  audio(); tone(+k.dataset.n + keyNow(), ac.currentTime + .01, .8, .15, comp);
+};
+
+// ---------- MIDI（確認用。入力にはしない）----------
+function midiMsg(e){
+  const [st, n, v] = e.data, t = st & 0xf0;
+  if (t === 0x90 && v > 0){
+    audio(); if (held.has(n)) held.get(n).gain.setTargetAtTime(0, ac.currentTime, .03);
+    held.set(n, tone(n + keyNow(), ac.currentTime, 8, .06 + .12 * v / 127, comp));
+  } else if (t === 0x80 || (t === 0x90 && v === 0)){
+    const g = held.get(n); if (!g) return;
+    held.delete(n); g.gain.cancelScheduledValues(ac.currentTime); g.gain.setTargetAtTime(0, ac.currentTime, .08);
+  } else return;
+  renderKeys();
+}
+if (navigator.requestMIDIAccess) navigator.requestMIDIAccess().then(m => {
+  const hook = () => m.inputs.forEach(i => { i.onmidimessage = midiMsg; });
+  hook(); m.onstatechange = hook;
+}).catch(() => {});
+
+// ---------- プルダウン ----------
+const menu = $('menu');
+let menuCb = null, menuF = null;
+function openMenu(btn, items, cur, cb){
+  if (!menu.hidden && menuF === btn.dataset.f){ closeMenu(); return; }
+  menu.innerHTML = items.map((t, i) => `<button type="button" role="option" data-m="${i}" aria-selected="${i === cur}">${t}</button>`).join('');
+  const b = btn.getBoundingClientRect();
+  menu.style.left = b.left + scrollX + 'px'; menu.style.top = b.bottom + scrollY + 'px'; menu.style.minWidth = b.width + 'px';
+  menu.hidden = false; menuCb = cb; menuF = btn.dataset.f;
+  (menu.querySelector('[aria-selected=true]') || menu.querySelector('button')).focus();
+}
+function closeMenu(refocus){
+  if (menu.hidden) return;
+  menu.hidden = true;
+  if (refocus){ const el = document.querySelector(`[data-f="${menuF}"]`); if (el) el.focus(); }
+}
+menu.onclick = e => {
+  const b = e.target.closest('[data-m]'); if (!b) return;
+  const cb = menuCb; closeMenu(true); cb(+b.dataset.m);
+};
+menu.onkeydown = e => {
+  const bs = [...menu.querySelectorAll('button')], k = bs.indexOf(document.activeElement);
+  if (e.key === 'ArrowDown' && k < bs.length - 1){ bs[k + 1].focus(); e.preventDefault(); }
+  if (e.key === 'ArrowUp' && k > 0){ bs[k - 1].focus(); e.preventDefault(); }
+  if (e.key === 'Escape') closeMenu(true);
+};
+document.addEventListener('pointerdown', e => {
+  if (!menu.hidden && !menu.contains(e.target) && !(e.target.closest('[data-f]') && e.target.closest('[data-f]').dataset.f === menuF)) closeMenu();
+});
+
+// ---------- 曲一覧 ----------
+$('songs').onclick = e => {
+  if (e.target.closest('#fold')){ D.fold = !D.fold; persist(); render(); return; }
+  if (e.target.closest('#new')){ sel = null; change(() => { const s = newSong(); D.songs.push(s); D.cur = s.id; }); $('title').focus(); return; }
+  const d = e.target.closest('[data-del]');
+  if (d){
+    sel = null;
+    change(() => {
+      D.songs = D.songs.filter(s => s.id !== d.dataset.del);
+      if (!D.songs.length) D.songs.push(newSong());
+      if (!D.songs.some(s => s.id === D.cur)) D.cur = D.songs[0].id;
+    });
+    return;
+  }
+  const b = e.target.closest('[data-song]');
+  if (b && b.dataset.song !== D.cur){ stopPlay(); D.cur = b.dataset.song; sel = null; editing = null; persist(); render(); }
+};
+
+// ---------- コード進行 ----------
+const slotOf = id => flat(song()).find(x => x.id === id);
+const focusSlot = id => { const el = document.querySelector(`[data-s="${id}"]`); if (el) el.focus(); };
+function pick(id, extend){
+  if (extend && sel) sel.z = id; else sel = { a: id, z: id };
+  editing = null; render(); focusSlot(id);
+  const x = slotOf(id); if (!extend && x && x.c) play(x.c, keyOf(song(), x.sec));
+}
+function startEdit(id, init){
+  const x = slotOf(id); if (!x) return;
+  editing = id; editText = init != null ? init : x.c ? x.c.t : ''; sel = { a: id, z: id };
+  render();
+}
+// mode: next（確定して次へ）/ blur（確定、読めなければ取り消し）/ cancel
+function endEdit(mode){
+  if (!editing || ending) return;
+  const id = editing, el = $('ed');
+  let v = null;
+  if (mode !== 'cancel'){
+    v = parse(el ? el.value : '');
+    if (v === undefined){ if (mode === 'blur') mode = 'cancel'; else { el.classList.add('err'); return; } }
+  }
+  ending = true; editing = null;
+  if (mode !== 'cancel') change(() => { const x = slotOf(id); if (x) x.cell.c = v; });
+  let t = id;
+  if (mode === 'next'){ const f = flat(song()), i = f.findIndex(x => x.id === id); if (i >= 0 && i < f.length - 1) t = f[i + 1].id; }
+  sel = { a: t, z: t }; render(); ending = false;
+  if (mode !== 'blur') focusSlot(t);
+  const x = slotOf(id);
+  if (mode !== 'cancel' && v && x) play(v, keyOf(song(), x.sec));
+}
+
+// ---------- 長さ：押したまま左右にドラッグ ----------
+// 伸ばすと次のマスを削り、縮めると次のマスに渡す（小節の合計は変わらない）。最後のマスは単に伸び縮みする
+const SNAP = .5;
+function resize(x, len){
+  const cs = x.sec.cells, k = cs.indexOf(x.cell), nx = cs[k + 1], min = Math.min(SNAP, x.cell.len);
+  const total = x.cell.len + (nx ? nx.len : 0);
+  len = Math.round(len / SNAP) * SNAP;
+  len = Math.max(min, nx ? Math.min(total - Math.min(SNAP, nx.len), len) : Math.min(64, len));
+  if (nx) nx.len = total - len;
+  x.cell.len = len;
+}
+function endResize(before){
+  fixSeqs(song());
+  if (snap() !== before){ hist.push(before); if (hist.length > 60) hist.shift(); persist(); }
+  render();
+}
+// マスの右端（↔）をドラッグすると長さ、本体をドラッグすると範囲選択
+let drag = null, dragged = false, sd = null;
+const noClick = () => { dragged = true; setTimeout(() => { dragged = false; }, 0); };
+$('prog').addEventListener('pointerdown', e => {
+  const b = e.target.closest('.cell[data-s]');
+  if (!b || editing || e.button !== 0) return;
+  if (e.target.closest('.eg')){
+    e.preventDefault();
+    const x = slotOf(e.target.closest('.eg').dataset.edge), g = b.closest('.grid');
+    const nx = x.sec.cells[x.sec.cells.indexOf(x.cell) + 1];
+    drag = { id: x.id, x0: e.clientX, beat: g.getBoundingClientRect().width / ROW, len: x.cell.len, nlen: nx && nx.len, on: false, before: snap() };
+    return;
+  }
+  if (!e.shiftKey) sd = { a: b.dataset.s, x0: e.clientX, y0: e.clientY, on: false };
+});
+window.addEventListener('pointermove', e => {
+  if (!sd) return;
+  if (!sd.on){ if (Math.hypot(e.clientX - sd.x0, e.clientY - sd.y0) < 6) return; sd.on = true; }
+  const el = document.elementFromPoint(e.clientX, e.clientY), c = el && el.closest('.cell[data-s]');
+  if (!c) return;
+  sel = { a: sd.a, z: c.dataset.s };
+  const r = curRange(), on = new Set(r ? r.f.slice(r.i, r.j + 1).map(x => x.id) : []);
+  document.querySelectorAll('.cell[data-s]').forEach(x => x.setAttribute('aria-pressed', on.has(x.dataset.s)));
+});
+window.addEventListener('pointerup', () => {
+  if (!sd) return;
+  const d = sd; sd = null;
+  if (!d.on) return;
+  noClick(); render(); focusSlot(sel.z);
+});
+window.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x0;
+  if (!drag.on){ if (Math.abs(dx) < 2) return; drag.on = true; }
+  const x = slotOf(drag.id); if (!x) return;
+  const nx = x.sec.cells[x.sec.cells.indexOf(x.cell) + 1];
+  x.cell.len = drag.len; if (nx) nx.len = drag.nlen;
+  resize(x, drag.len + dx / drag.beat);
+  renderProg();
+  document.querySelectorAll(`[data-s="${drag.id}"]`).forEach(el => el.classList.add('drag'));
+});
+window.addEventListener('pointerup', () => {
+  if (!drag) return;
+  const d = drag; drag = null;
+  if (!d.on) return;
+  noClick(); sel = { a: d.id, z: d.id }; endResize(d.before); focusSlot(d.id);
+});
+
+$('prog').onclick = e => {
+  const s = song();
+  const sl = e.target.closest('[data-s]');
+  if (dragged){ dragged = false; return; }
+  if (sl){ const id = sl.dataset.s; if (editing) endEdit('blur'); pick(id, e.shiftKey); return; }
+  const secBy = id => s.secs.find(x => x.id === id);
+  let b;
+  if ((b = e.target.closest('#keyBtn'))) return openMenu(b, KEYS, s.key, i => change(() => { s.key = i; }));
+  if (e.target.closest('#split')) return doSplit();
+  if (e.target.closest('#play')) return P ? stopPlay() : startPlay();
+  if (e.target.closest('#loop')){ D.loop = !D.loop; if (P) P.loop = D.loop; persist(); renderProg(); return; }
+  if (e.target.closest('#mel')){ D.mel = !D.mel; persist(); renderProg(); return; }
+  if ((b = e.target.closest('[data-sk]'))){
+    const sec = secBy(b.dataset.sk);
+    return openMenu(b, ['-', ...KEYS], sec.k == null ? 0 : sec.k + 1, i => change(() => { sec.k = i ? i - 1 : null; }));
+  }
+  if ((b = e.target.closest('[data-add]'))) return change(() => secBy(b.dataset.add).cells.push(newCell()));
+  if ((b = e.target.closest('[data-rm]'))) return change(() => { const sec = secBy(b.dataset.rm); if (sec.cells.length > 1) sec.cells.pop(); });
+  if ((b = e.target.closest('[data-rmsec]'))) return change(() => { if (s.secs.length > 1) s.secs = s.secs.filter(x => x.id !== b.dataset.rmsec); });
+  if (e.target.closest('#addSec')) return change(() => s.secs.push(newSec(String.fromCharCode(65 + Math.min(s.secs.length, 25)))));
+};
+// 入力中に別のマスを押したとき、フォーカスが外れて押した先が消えないようにする
+$('prog').onpointerdown = e => { if (editing && e.target.closest('[data-s]')) e.preventDefault(); };
+$('prog').ondblclick = e => { const sl = e.target.closest('[data-s]'); if (sl) startEdit(sl.dataset.s); };
+$('prog').onkeydown = e => {
+  if (e.target.id === 'ed'){
+    if (e.key === 'Enter' && !e.isComposing){ endEdit('next'); e.preventDefault(); }
+    else if (e.key === 'Tab'){ endEdit('next'); e.preventDefault(); }
+    else if (e.key === 'Escape'){ endEdit('cancel'); e.preventDefault(); }
+    return;
+  }
+  const sl = e.target.closest('[data-s]'); if (!sl) return;
+  const id = sl.dataset.s, f = flat(song()), i = f.findIndex(x => x.id === id);
+  let j = null;
+  if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')){
+    const before = snap(); resize(f[i], f[i].cell.len + (e.key === 'ArrowLeft' ? -.5 : .5)); endResize(before); focusSlot(id); e.preventDefault(); return;
+  }
+  if (e.key === 'ArrowLeft') j = i - 1;
+  if (e.key === 'ArrowRight') j = i + 1;
+  if (e.key === 'ArrowUp' || e.key === 'ArrowDown'){
+    // 1段（4小節）上下の同じ位置にあるマスへ
+    const t = f[i].st + (e.key === 'ArrowUp' ? -ROW : ROW);
+    j = f.findIndex(x => x.st <= t && t < x.st + x.cell.len);
+    if (j < 0) j = f.reduce((b, x, k) => Math.abs(x.st - t) < Math.abs(f[b].st - t) ? k : b, 0);
+  }
+  if (j != null){ if (j >= 0 && j < f.length) pick(f[j].id, e.shiftKey); e.preventDefault(); return; }
+  if (e.key === 'Enter' || e.key === 'F2'){ startEdit(id); e.preventDefault(); return; }
+  if (e.key === 'Delete' || e.key === 'Backspace'){
+    const r = curRange();
+    change(() => (r ? r.f.slice(r.i, r.j + 1) : [f[i]]).forEach(x => { x.cell.c = null; }));
+    e.preventDefault(); return;
+  }
+  if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey && /[1-7ivIVb#]/.test(e.key)){ startEdit(id, e.key); e.preventDefault(); }
+};
+$('prog').addEventListener('focusout', e => { if (e.target.id === 'ed') endEdit('blur'); });
+$('prog').oninput = e => {
+  const s = song(), t = e.target;
+  if (t.id === 'ed'){ editText = t.value; t.classList.remove('err'); return; }
+  if (t.id === 'title' || t.id === 'artist'){ s[t.id] = t.value; persist(); renderSongs(); return; }
+  if (t.id === 'bpm'){ const v = parseInt(t.value, 10); if (v >= 30 && v <= 300){ s.bpm = v; persist(); } return; }
+  if (t.dataset.sec){ const sec = s.secs.find(x => x.id === t.dataset.sec); if (sec){ sec.name = t.value; persist(); } }
+};
+
+// ---------- 情報・メモ ----------
+$('info').onclick = e => {
+  const s = song(), r = curRange();
+  if (e.target.closest('#madd') && r){
+    change(() => s.memos.push({ id: uid(), a: r.ids[0], z: r.ids[1], name: '', text: '', seq: [] }));
+    $('mname').focus(); return;
+  }
+  if (e.target.closest('#mdel') && r){ const m = memoAt(s, r); change(() => { s.memos = s.memos.filter(x => x !== m); }); return; }
+  const g = e.target.closest('[data-go]');
+  if (g){
+    const [sid, mid] = g.dataset.go.split(' '), so = D.songs.find(x => x.id === sid), m = so && so.memos.find(x => x.id === mid);
+    if (!m) return;
+    D.cur = sid; persist();
+    sel = range(so, m.a, m.z) ? { a: m.a, z: m.z } : null;
+    editing = null; render();
+    if (sel) focusSlot(sel.a);
+  }
+};
+$('info').oninput = e => {
+  const s = song(), r = curRange(), m = r && memoAt(s, r); if (!m) return;
+  if (e.target.id === 'mname') m.name = e.target.value;
+  if (e.target.id === 'mtext') m.text = e.target.value;
+  persist();
+};
+
+// 文字入力欄は、入力を終えたときに1回だけ Undo に積む
+document.addEventListener('focusin', e => { if (e.target.matches('input:not(#ed):not([type=file]), textarea')) fieldBefore = snap(); });
+document.addEventListener('focusout', e => {
+  if (!e.target.matches('input:not(#ed):not([type=file]), textarea') || fieldBefore == null) return;
+  if (snap() !== fieldBefore){ hist.push(fieldBefore); if (hist.length > 60) hist.shift(); }
+  fieldBefore = null;
+  if (e.target.id === 'mname' || e.target.id === 'mtext') renderInfo();
+  if (e.target.id === 'bpm') e.target.value = song().bpm;   // 描き直すと押そうとしたボタンが消えるので値だけ戻す
+});
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input, textarea')) return;
+  if (e.code === 'Space'){ P ? stopPlay() : startPlay(); e.preventDefault(); return; }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z'){ undo(); e.preventDefault(); }
+});
+
+// ---------- 書き出し・読み込み ----------
+$('exp').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify({ songs: D.songs })], { type: 'application/json' }));
+  a.download = 'anachord.json'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+$('imp').onclick = () => $('file').click();
+$('file').onchange = e => { const f = e.target.files[0]; if (f) load(f); e.target.value = ''; };
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) load(f); });
+function load(f){
+  f.text().then(t => {
+    let j; try { j = JSON.parse(t); } catch { return; }
+    if (!j || !Array.isArray(j.songs)) return;
+    const ok = j.songs.filter(s => s && s.id && Array.isArray(s.secs) && s.secs.length).map(norm);
+    if (!ok.length) return;
+    sel = null; editing = null;
+    change(() => {
+      ok.forEach(s => { const i = D.songs.findIndex(x => x.id === s.id); if (i >= 0) D.songs[i] = s; else D.songs.push(s); });
+      D.cur = ok[0].id;
+    });
+  });
+}
+
+render();
+</script>
+</body>
+</html>
