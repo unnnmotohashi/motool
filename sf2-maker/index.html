@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SF2 Maker</title>
+<style>
+  :root { --bg:#e6e8eb; --panel:#ffffff; --ink:#1d2127; --sub:#6b7380; --line:#c9ced6; --accent:#2f6fde; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; font-family:"KHDot", "BTDot", system-ui, sans-serif; background:var(--bg); color:var(--ink); font-size:12px; line-height:1; -webkit-font-smoothing:none; font-smooth:never; }
+  header { display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px 14px; background:var(--panel); border-bottom:1px solid var(--line); }
+  .top { color:var(--sub); text-decoration:none; margin-right:6px; }
+  .top:hover { color:var(--ink); }
+  .grow { flex:1; }
+  .sp { width:10px; }
+  .cnt { color:var(--sub); }
+  .wbar { border-top:1px solid var(--line); }
+  .hint { padding:8px 10px; color:var(--sub); line-height:1.6; }
+  #srcName { color:var(--sub); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height:1.4; }
+  button { padding:6px 12px; border:1px solid var(--line); border-radius:4px; background:#f5f6f8; font:inherit; color:var(--ink); cursor:pointer; }
+  button:disabled { color:var(--sub); cursor:default; }
+  button[aria-pressed=true] { background:var(--ink); border-color:var(--ink); color:#fff; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  button.primary:disabled { opacity:.5; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .box { background:var(--panel); border:1px solid var(--line); border-radius:4px; }
+  .bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px; border-bottom:1px solid var(--line); }
+  label { display:flex; align-items:center; gap:6px; color:var(--sub); }
+  .lv { display:flex; gap:2px; padding:2px; cursor:pointer; touch-action:none; }
+  .lv i { width:12px; height:18px; border:1.5px solid var(--ink); background:#fff; }
+  .lv i.on { background:var(--ink); }
+  #db { width:36px; }
+  #lr { width:24px; }
+  .dd { position:relative; }
+  .dd > button { width:60px; text-align:left; padding:6px 8px; color:var(--ink); }
+  .dd > button::after { content:"▼"; float:right; }
+  .dd.w > button, .dd.w .list { width:96px; }
+  .dd.m > button, .dd.m .list { width:76px; }
+  .list { position:absolute; top:100%; left:0; z-index:10; width:60px; max-height:240px; overflow:auto; background:#fff; border:1px solid var(--ink); }
+  .list button { display:block; width:100%; text-align:left; border:0; border-radius:0; background:#fff; padding:5px 8px; }
+  .list button:hover, .list button:focus-visible { background:var(--ink); color:#fff; outline:0; }
+  .list button[aria-selected=true] { text-decoration:underline; }
+  main { display:flex; gap:12px; align-items:flex-start; padding:12px; max-width:960px; }
+  #list { flex:none; width:280px; max-height:60vh; overflow-y:auto; margin:0; padding:0; list-style:none; }
+  #list li { display:flex; gap:12px; padding:8px 10px; border-top:1px solid var(--line); border-left:2px solid transparent; cursor:pointer; user-select:none; }
+  #list li:first-child { border-top-color:transparent; }
+  #list li:hover { background:#f5f6f8; }
+  #list li.on { border-left-color:var(--accent); }
+  #list li.lift { opacity:.4; }
+  #list li.ins { box-shadow:inset 0 0 0 2px var(--ink); }
+  #list li:focus-visible { outline-offset:-2px; }
+  #list .k { width:56px; flex:none; color:var(--sub); }
+  #list .n { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #list .empty { padding:32px 10px; justify-content:center; color:var(--sub); cursor:default; }
+  #list .empty:hover { background:none; }
+  #list .back { color:var(--sub); }
+  body.drag #list { outline:2px dashed var(--accent); outline-offset:-2px; }
+  #ed { flex:1; min-width:0; }
+  #ed[hidden] { display:none; }
+  #wave { display:block; width:100%; height:auto; touch-action:none; cursor:crosshair; }
+  #wave:focus-visible { outline-offset:-2px; }
+  #kb { margin:0 12px 12px; max-width:936px; overflow:hidden; }
+  #piano { position:relative; height:100px; margin:10px; overflow-x:auto; overflow-y:hidden; user-select:none; touch-action:pan-x; }
+  #piano div { position:absolute; top:0; border:1px solid var(--ink); }
+  #piano .w { width:23px; height:86px; background:var(--bg); border-color:var(--line); border-radius:0 0 3px 3px; }
+  #piano .b { width:14px; height:52px; background:var(--sub); border-color:var(--sub); z-index:1; border-radius:0 0 2px 2px; }
+  #piano .has { cursor:pointer; }
+  #piano .w.has { background:#fff; border-color:var(--ink); }
+  #piano .b.has { background:var(--ink); border-color:var(--ink); }
+  #piano .w.down { background:var(--line); }
+  #piano .b.down { background:var(--sub); }
+  #piano .sel { box-shadow:inset 0 -3px var(--accent); }
+  #piano .root { box-shadow:inset 0 -7px var(--accent); }
+  #piano span { position:absolute; left:0; right:0; bottom:10px; text-align:center; color:var(--sub); }
+  @media (max-width:700px) { main { flex-direction:column; align-items:stretch; } #list { width:auto; } }
+</style>
+</head>
+<body>
+<header>
+  <a class="top" href="../">Top</a>
+  <button id="open" title="音声ファイル（wav・mp3など）かSF2を開く">開く</button>
+  <button id="pickBtn" hidden title="SF2の中の別の楽器に切り替える。編集した内容は楽器ごとに残ります">楽器を選ぶ</button>
+  <span id="srcName"></span>
+  <span class="grow"></span>
+  <button id="del" title="選んでいる音を消す（Deleteキーでも消せます）" disabled>この音を削除</button>
+  <button id="clear">全部消す</button>
+  <button class="primary" id="save" title="今の楽器をSF2として保存">保存</button>
+  <input type="file" id="files" accept="audio/*,.sf2" multiple hidden>
+</header>
+<main>
+  <ul id="list" class="box" aria-label="Samples"></ul>
+  <section id="ed" class="box" hidden aria-label="音の編集">
+    <div class="bar">
+      <button id="play" aria-pressed="false" title="試しに鳴らす（ループする音は、もう一度押すまで鳴り続けます）">再生</button>
+      <button id="norm" aria-pressed="false" title="音量を最大近くまで持ち上げてそろえる">ノーマライズ</button>
+      <span class="sp"></span>
+      <label>音量 <span class="lv" id="vol" role="slider" tabindex="0" aria-label="音量" aria-valuemin="1" aria-valuemax="10"></span> <span id="db"></span></label>
+      <label>左右 <span class="lv" id="pan" role="slider" tabindex="0" aria-label="左右" aria-valuemin="-4" aria-valuemax="4"></span> <span id="lr"></span></label>
+    </div>
+    <div class="bar">
+      <label title="この鍵盤で、録音したままの高さで鳴ります">元の高さ <span class="dd"><button id="root" aria-haspopup="listbox" aria-label="元の高さ"></button></span></label>
+      <label title="この範囲の鍵盤で鳴ります。元の高さから離れるほど音程が変わります">鳴らす範囲 <span class="dd"><button id="lo" aria-haspopup="listbox" aria-label="鳴らす範囲の下"></button></span> 〜 <span class="dd"><button id="hi" aria-haspopup="listbox" aria-label="鳴らす範囲の上"></button></span></label>
+      <span class="sp"></span>
+      <button id="loop" aria-pressed="false" title="トランペットやサックスのように伸ばす音用。鍵盤を押している間、青い部分をくり返します">ループ</button>
+      <span class="sp"></span>
+      <label title="同じ番号の音どうしは同時に鳴らず、新しい音が鳴ると前の音が止まります（例：オープンとクローズのハイハット）。全部の音を同じ番号にすると、1音ずつしか鳴らない楽器になります">排他グループ <span class="dd"><button id="excl" aria-haspopup="listbox" aria-label="排他グループ"></button></span></label>
+    </div>
+    <div class="bar">
+      <span class="cnt">音の粗さ</span>
+      <button id="pSnes" aria-pressed="false" title="スーファミ風：16000Hz・12bit・こもり ふつう">スーファミ風</button>
+      <button id="p64" aria-pressed="false" title="64風：22050Hz・12bit・こもり 強め">64風</button>
+      <button id="pDs" aria-pressed="false" title="DS風：22050Hz・8bit・こもりなし">DS風</button>
+      <button id="pOrig" aria-pressed="false" title="粗さをなくして元の音に戻す">元のまま</button>
+      <span class="grow"></span>
+      <button id="crushAll" title="今の音の「音の粗さ」を、この楽器の全部の音に同じように設定する">全部の音に同じ設定</button>
+    </div>
+    <div class="bar">
+      <label title="1秒を何回に刻むか。下げると高い音が出なくなり、ザラッとした昔のゲーム機の音になります。目安：スーファミ風 11025〜16000Hz、DS風 16000〜22050Hz">サンプリング <span class="dd w"><button id="rate" aria-haspopup="listbox" aria-label="サンプリングレート"></button></span></label>
+      <label title="音量を何段階で表すか。下げると、音が小さくなるところでジリジリしたノイズが出ます。目安：DS風 8bit、もっと荒く 4〜6bit">ビット数 <span class="dd w"><button id="bits" aria-haspopup="listbox" aria-label="ビット数"></button></span></label>
+      <label title="スーファミのような、こもった柔らかい響きにします。高い音を削って、粗さの角を丸めます">こもり <span class="dd m"><button id="lpf" aria-haspopup="listbox" aria-label="こもり"></button></span></label>
+    </div>
+    <canvas id="wave" width="600" height="120" tabindex="0" role="application" aria-label="波形"></canvas>
+    <div class="bar wbar">
+      <button id="zoom" title="選んだ範囲まで拡大">拡大</button>
+      <button id="all" title="全体を表示">全体</button>
+      <span class="grow"></span>
+      <span class="cnt" id="len"></span>
+    </div>
+    <div class="hint" id="hint"></div>
+  </section>
+</main>
+<section id="kb" class="box" aria-label="鍵盤">
+  <div class="bar">
+    <button id="midi" aria-pressed="false" title="つないだMIDIキーボードで弾けるようにする（Chrome・Edge）">MIDIキーボード</button>
+    <span class="cnt" id="dev"></span>
+  </div>
+  <div id="piano" aria-hidden="true"></div>
+</section>
+<script>
+// 英数字は KH Dot、日本語はベストテンDOT（10pxのドット格子なので 12px の中で 10px 相当に縮めてくっきり見せる）
+document.head.insertAdjacentHTML('beforeend', `<style>@font-face{font-family:"KHDot";src:url(data:font/woff;base64,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) format("woff");}
+@font-face{font-family:"BTDot";src:url(data:font/woff2;base64,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) format("woff2");size-adjust:83.333%;}</style>`);
+
+const $ = id => document.getElementById(id);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const START_KEY = 36;                 // 新しい音はC2から空いている鍵盤へ
+const MIN_LEN = 32;                   // 切り出し・ループの最短（サンプル点）
+const W = 600, H = 120, INK = '#1d2127', LINE = '#c9ced6', ACC = '#2f6fde';
+const VOL_DB = [-27, -24, -21, -18, -15, -12, -9, -6, -3, 0];   // 段階バーの10マス（3dB刻み）
+const NOTE = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const keyName = k => NOTE[k % 12] + (Math.floor(k / 12) - 1);
+const rangeName = s => s.lo === s.hi ? keyName(s.lo) : keyName(s.lo) + '-' + keyName(s.hi);
+// 鍵盤を離してから消えるまでの秒数（読み込んだSF2の値があればそれを使う）
+const relOf = s => s.rel ?? (s.loop ? 0.3 : 2);
+let ctx, samples = [], cur = -1, drag = null, meta = {}, picking = null;
+// source：開いているSF2。楽器（プリセット）ごとの編集内容を cache に残し、切り替えても戻れるようにする
+let source = null;
+
+const audio = () => { ctx = ctx || new AudioContext(); ctx.resume(); return ctx; };
+
+// 1つの音 = サンプル＋鍵盤の範囲（lo〜hi）＋原音の高さで鳴る鍵盤（root）
+function item(name, buf, k) {
+  const n = buf.length;
+  return { name, buf, a: 0, b: n, v0: 0, v1: n, norm: false, vol: 9, pan: 4,
+           lo: k, hi: k, root: k, vlo: 0, vhi: 127, loop: false, ls: null, le: null, rate: 0, bits: 16, lpf: 0 };
+}
+const sortSamples = () => { const s = samples[cur]; samples.sort((p, q) => p.lo - q.lo || p.vlo - q.vlo); cur = samples.indexOf(s); };
+
+// 読み込み：音声はモノラルにまとめて空いている鍵盤へ。SF2はプリセットを選んで丸ごと読み込む
+async function add(files) {
+  audio();
+  const sf = files.find(f => /\.sf2$/i.test(f.name));
+  if (sf) return openSF2(sf);
+  let added = null;
+  for (const f of files) {
+    const k = samples.length ? Math.max(...samples.map(s => s.hi)) + 1 : START_KEY;
+    if (k > 127) { alert('空いている鍵盤がありません'); break; }
+    try {
+      const src = await ctx.decodeAudioData(await f.arrayBuffer());
+      const n = src.length, ch = src.numberOfChannels;
+      const buf = ctx.createBuffer(1, n, src.sampleRate), m = buf.getChannelData(0);
+      for (let c = 0; c < ch; c++) { const d = src.getChannelData(c); for (let i = 0; i < n; i++) m[i] += d[i] / ch; }
+      samples.push(added = item(f.name.replace(/\.[^.]+$/, ''), buf, k));
+    } catch { alert(`読み込めませんでした：${f.name}`); }
+  }
+  if (added) cur = samples.indexOf(added);
+  sortSamples();
+  renderList();
+}
+
+// ---- 発音 ----
+// voices：鍵盤ごとに鳴っている音。'p' は Play ボタンと試聴用
+const voices = new Map();
+let previewTimer = 0, held = false;   // held：Play で鳴らし続けている
+
+function startVoice(s, k, vel) {
+  const r = s.buf.sampleRate, src = ctx.createBufferSource();
+  const vg = ctx.createGain(), pn = ctx.createStereoPanner(), env = ctx.createGain();
+  src.buffer = crushed(s);
+  src.playbackRate.value = 2 ** (((k - s.root) * (s.track ?? 1) * 100 + (s.tune || 0)) / 1200);
+  vg.gain.value = outGain(s);
+  pn.pan.value = (s.pan - 4) / 4;
+  env.gain.value = vel * vel;
+  src.connect(vg).connect(pn).connect(env).connect(ctx.destination);
+  if (s.loop) { src.loop = true; src.loopStart = s.ls / r; src.loopEnd = s.le / r; src.start(0, s.a / r); }
+  else src.start(0, s.a / r, (s.b - s.a) / r);
+  return { src, vg, pn, env, s };
+}
+
+function fadeOut(v, r) {
+  const t = ctx.currentTime, g = v.env.gain;
+  g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.setTargetAtTime(0, t, r / 6);
+  try { v.src.stop(t + r); } catch {}
+}
+
+function noteOn(key, k, vel, list) {
+  audio();
+  noteOff(key, 0.01);
+  if (!list.length) return;
+  // 排他グループ：同じ番号の音が鳴っていたら止める
+  const ex = new Set(list.map(s => s.excl).filter(Boolean));
+  if (ex.size) voices.forEach((vs, kk) => {
+    const rest = vs.filter(v => !ex.has(v.s.excl));
+    if (rest.length === vs.length) return;
+    vs.forEach(v => { if (ex.has(v.s.excl)) fadeOut(v, 0.01); });
+    if (rest.length) voices.set(kk, rest); else { voices.delete(kk); if (kk === 'p') held = false; }
+  });
+  const vs = list.map(s => startVoice(s, k, vel));
+  voices.set(key, vs);
+  vs.forEach(v => v.src.onended = () => {
+    const a = voices.get(key), i = a ? a.indexOf(v) : -1;
+    if (i < 0) return;
+    a.splice(i, 1);
+    if (!a.length) { voices.delete(key); if (key === 'p') playState(); }
+  });
+  if (key === 'p') playState();
+}
+
+function noteOff(key, rel) {
+  const vs = voices.get(key); if (!vs) return;
+  voices.delete(key);
+  if (key === 'p') held = false;
+  vs.forEach(v => fadeOut(v, rel ?? relOf(v.s)));
+  if (key === 'p') playState();
+}
+
+const playState = () => $('play').setAttribute('aria-pressed', held && voices.has('p'));
+
+// 試聴：ループする音は少しだけ伸ばして離す
+function preview(s) {
+  clearTimeout(previewTimer);
+  noteOn('p', s.root, 1, [s]);
+  if (s.loop) previewTimer = setTimeout(() => noteOff('p'), 1200);
+}
+// Play：ループする音は押すたびに 鳴らし続ける／離す
+function togglePlay() {
+  const s = samples[cur]; if (!s) return;
+  clearTimeout(previewTimer);
+  if (held) noteOff('p');
+  else { noteOn('p', s.root, 1, [s]); held = s.loop; playState(); }
+}
+// 鳴らしたまま調整しているときは、そのまま音に反映する
+function liveUpdate(s) {
+  const r = s.buf.sampleRate;
+  voices.forEach(vs => vs.forEach(v => {
+    if (v.s !== s || v.src.buffer !== crushed(s)) return;
+    v.vg.gain.value = outGain(s);
+    v.pn.pan.value = (s.pan - 4) / 4;
+    if (v.src.loop && s.loop) { v.src.loopStart = s.ls / r; v.src.loopEnd = s.le / r; }
+    else v.src.loop = false;
+  }));
+}
+const previewUnlessHeld = s => { if (!held) preview(s); };
+
+// ---- 一覧 ----
+function row(k, name, cls) {
+  const li = document.createElement('li');
+  li.tabIndex = 0;
+  li.setAttribute('role', 'button');
+  li.setAttribute('aria-label', `${k} ${name}`);
+  li.innerHTML = `<span class="k"></span><span class="n"></span>`;
+  li.firstChild.textContent = k;
+  li.lastChild.textContent = name;
+  if (cls) li.className = cls;
+  return li;
+}
+
+function renderList(focusIdx) {
+  picking = null;
+  const list = $('list');
+  list.innerHTML = '';
+  if (!samples.length) list.innerHTML = '<li class="empty">音声ファイルかSF2をドロップ</li>';
+  samples.forEach((s, i) => {
+    const li = row(rangeName(s), s.name);
+    li.onfocus = () => select(i);
+    li.onclick = () => { if (noClick) return; select(i); preview(s); };
+    li.onpointerdown = e => { if (!e.button) { rowDrag = { from: i, y0: e.clientY, on: false, to: i }; li.setPointerCapture(e.pointerId); } };
+    li.onpointermove = e => rowMove(li, e);
+    li.onpointerup = li.onpointercancel = () => rowDrop(li);
+    li.onkeydown = e => {
+      if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+        const to = i + (e.key === 'ArrowUp' ? -1 : 1);
+        if (to >= 0 && to < samples.length) swap(i, to, true);
+        e.preventDefault();
+      }
+      else if (e.key === 'Enter' || e.key === ' ') { preview(s); e.preventDefault(); }
+      else if (e.key === 'Delete' || e.key === 'Backspace') { remove(i, true); e.preventDefault(); }
+      else if (e.key === 'ArrowDown' && li.nextSibling) { li.nextSibling.focus(); e.preventDefault(); }
+      else if (e.key === 'ArrowUp' && li.previousSibling) { li.previousSibling.focus(); e.preventDefault(); }
+    };
+    list.appendChild(li);
+  });
+  renderPiano();
+  if (focusIdx >= 0 && list.children[focusIdx]) list.children[focusIdx].focus();
+  $('save').disabled = $('clear').disabled = $('del').disabled = !samples.length;
+  select(cur);
+}
+
+// 1件削除（ほかの音の鍵盤はそのまま）
+function remove(i, focus) {
+  if (voices.has('p')) noteOff('p', 0.01);
+  samples.splice(i, 1);
+  cur = Math.min(i, samples.length - 1);
+  renderList(focus ? cur : undefined);
+}
+
+// ---- 入れ替え（行を別の行へドラッグ／Alt+↑↓）。2つの音の鍵盤を交換する ----
+let rowDrag = null, noClick = false;
+
+function swap(i, j, focus) {
+  const p = samples[i], q = samples[j];
+  for (const f of ['lo', 'hi', 'root', 'vlo', 'vhi']) [p[f], q[f]] = [q[f], p[f]];
+  cur = i;
+  sortSamples();
+  renderList(focus ? cur : undefined);
+}
+
+function rowMove(li, e) {
+  const d = rowDrag; if (!d) return;
+  if (!d.on && Math.abs(e.clientY - d.y0) < 5) return;
+  d.on = true;
+  li.classList.add('lift');
+  const rows = [...$('list').children];
+  d.to = rows.findIndex(el => { const r = el.getBoundingClientRect(); return e.clientY >= r.top && e.clientY < r.bottom; });
+  rows.forEach((el, j) => el.classList.toggle('ins', j === d.to && j !== d.from));
+}
+
+function rowDrop(li) {
+  const d = rowDrag; if (!d) return;
+  rowDrag = null;
+  if (!d.on) return;
+  noClick = true; setTimeout(() => noClick = false);
+  li.classList.remove('lift');
+  [...$('list').children].forEach(el => el.classList.remove('ins'));
+  if (d.to >= 0 && d.to !== d.from) swap(d.from, d.to);
+}
+
+function select(i) {
+  cur = i;
+  if (!picking && samples.length) [...$('list').children].forEach((li, j) => li.classList.toggle('on', j === i));
+  pianoEl.querySelectorAll('.sel, .root').forEach(el => el.classList.remove('sel', 'root'));
+  const s = samples[i];
+  if (s) {
+    for (let k = s.lo; k <= s.hi; k++) { const el = keyEl(k); if (el) el.classList.add('sel'); }
+    const el = keyEl(s.root);
+    if (el) {
+      el.classList.add('root');
+      // 鍵盤が横にはみ出しているときは、選んだ音が見える位置までずらす
+      const x = el.offsetLeft, v = pianoEl.scrollLeft;
+      if (x < v || x + WK > v + pianoEl.clientWidth) pianoEl.scrollLeft = x - pianoEl.clientWidth / 2;
+    }
+  }
+  playState();
+  draw();
+}
+
+// ---- 鍵盤 ----
+const pianoEl = $('piano'), WK = 22, BK = 14;
+const isBlack = k => [1, 3, 6, 8, 10].includes(k % 12);
+const keyEl = k => pianoEl.querySelector(`[data-k="${k}"]`);
+
+// 音が入っている範囲をオクターブ単位で表示（C2から最低2オクターブ）
+function renderPiano() {
+  const has = new Uint8Array(128);
+  samples.forEach(s => has.fill(1, s.lo, s.hi + 1));
+  const k0 = Math.min(START_KEY, ...samples.map(s => s.lo - s.lo % 12));
+  const k1 = Math.min(127, Math.max(k0 + 23, ...samples.map(s => s.hi - s.hi % 12 + 11)));
+  let html = '', wi = 0;
+  for (let k = k0; k <= k1; k++) {
+    const c = has[k] ? ' has' : '';
+    if (isBlack(k)) html += `<div class="b${c}" data-k="${k}" style="left:${wi * WK - BK / 2}px"></div>`;
+    else html += `<div class="w${c}" data-k="${k}" style="left:${wi++ * WK}px">${k % 12 ? '' : `<span>${keyName(k)}</span>`}</div>`;
+  }
+  pianoEl.innerHTML = html;
+}
+
+function keyDown(k, vel) {
+  if (openDD && openDD.isNote) { openDD.pick(k); return; }   // 鍵盤の選択欄が開いていたら、その鍵盤を選ぶ
+  const el = keyEl(k); if (el) el.classList.add('down');
+  const v = Math.round(vel * 127);
+  const list = samples.filter(s => s.lo <= k && k <= s.hi && s.vlo <= v && v <= s.vhi);
+  if (list.length) select(samples.indexOf(list[0]));
+  noteOn(k, k, vel, list);
+}
+function keyUp(k) {
+  const el = keyEl(k); if (el) el.classList.remove('down');
+  noteOff(k);
+}
+
+pianoEl.onpointerdown = e => {
+  const el = e.target.closest('[data-k]'); if (!el) return;
+  audio();
+  const k = +el.dataset.k;
+  keyDown(k, 1);
+  const up = () => { keyUp(k); removeEventListener('pointerup', up); };
+  addEventListener('pointerup', up);
+};
+
+// Web MIDI：どのチャンネルのノートでも受ける
+let midi = null;
+$('midi').onclick = async () => {
+  audio();
+  if (midi) return;
+  if (!navigator.requestMIDIAccess) { $('dev').textContent = 'このブラウザでは使えません'; return; }
+  try { midi = await navigator.requestMIDIAccess(); }
+  catch { $('dev').textContent = '使用が許可されていません'; return; }
+  midi.onstatechange = bindMidi;
+  bindMidi();
+};
+function bindMidi() {
+  const names = [];
+  midi.inputs.forEach(inp => { inp.onmidimessage = onMidi; if (inp.state === 'connected') names.push(inp.name); });
+  $('dev').textContent = names.join(', ') || 'つながっていません';
+  $('midi').setAttribute('aria-pressed', true);
+}
+function onMidi(e) {
+  const [st, k, v] = e.data, t = st & 0xF0;
+  if (t === 0x90 && v > 0) keyDown(k, v / 127);
+  else if (t === 0x80 || t === 0x90) keyUp(k);
+}
+
+// ---- 選択欄（元の高さ・鳴らす範囲は高い音が上。排他グループは なし,1,2…）----
+let openDD = null;
+function dropdown(field, values, label, isNote) {
+  const btn = $(field), list = document.createElement('span');
+  list.className = 'list'; list.hidden = true;
+  list.setAttribute('role', 'listbox'); list.setAttribute('aria-label', btn.getAttribute('aria-label'));
+  if (isNote) btn.title = '開いたまま鍵盤やMIDIキーボードを押すと、その鍵盤を選べます';
+  values.forEach(v => {
+    const o = list.appendChild(document.createElement('button'));
+    o.type = 'button'; o.setAttribute('role', 'option'); o.textContent = label(v); o.dataset.v = v;
+    o.onclick = () => { pick(v); btn.focus(); };
+  });
+  btn.after(list);
+  const close = () => { list.hidden = true; if (openDD && openDD.list === list) openDD = null; };
+  const pick = v => { close(); setField(field, v); };
+  const now = () => values.indexOf(samples[cur][field] || 0);
+  btn.onclick = () => {
+    if (!list.hidden) return close();
+    if (openDD) openDD.close();
+    if (!samples[cur]) return;
+    list.hidden = false;
+    openDD = { list, pick, close, isNote };
+    const i = now();
+    [...list.children].forEach((o, j) => o.setAttribute('aria-selected', j === i));
+    const o = list.children[Math.max(0, i)];
+    o.scrollIntoView({ block: 'center' }); o.focus({ preventScroll: true });
+  };
+  // 閉じたまま ↑↓ で一つずつ変える（一覧の上下と同じ向き）
+  btn.onkeydown = e => {
+    const d = { ArrowUp: -1, ArrowDown: 1 }[e.key];
+    if (samples[cur] && d && list.hidden) { setField(field, values[clamp(now() + d, 0, values.length - 1)]); e.preventDefault(); }
+  };
+  list.onkeydown = e => {
+    const f = document.activeElement;
+    if (e.key === 'ArrowDown' && f.nextSibling) { f.nextSibling.focus(); e.preventDefault(); }
+    if (e.key === 'ArrowUp' && f.previousSibling) { f.previousSibling.focus(); e.preventDefault(); }
+    if (e.key === 'Escape') { close(); btn.focus(); }
+  };
+}
+document.addEventListener('pointerdown', e => { if (openDD && !e.target.closest('.dd')) openDD.close(); });
+
+// 1鍵盤だけの音は「元の高さ」を変えると鍵盤ごと移動する
+function setField(field, k) {
+  const s = samples[cur]; if (!s) return;
+  if (field === 'excl') { s.excl = k; return draw(); }
+  if (field === 'rate' || field === 'bits' || field === 'lpf') { s[field] = k; draw(); return replayHeld(s); }
+  if (field === 'root') { if (s.lo === s.hi && s.hi === s.root) s.lo = s.hi = k; s.root = k; }
+  else if (field === 'lo') { s.lo = k; if (s.hi < k) s.hi = k; }
+  else { s.hi = k; if (s.lo > k) s.lo = k; }
+  sortSamples();
+  renderList();
+}
+const NOTES = [...Array(128).keys()].reverse();
+['root', 'lo', 'hi'].forEach(f => dropdown(f, NOTES, keyName, true));
+dropdown('excl', [...Array(128).keys()], v => v ? String(v) : 'なし', false);
+const rateName = v => v ? v + 'Hz' : '元のまま';
+dropdown('rate', [0, 32000, 22050, 16000, 11025, 8000, 6000, 4000], rateName, false);
+dropdown('bits', [16, 12, 10, 8, 6, 4], v => v + 'bit', false);
+const LPF_NAME = ['なし', '少し', 'ふつう', '強め', 'とても'];
+dropdown('lpf', [0, 1, 2, 3, 4], v => LPF_NAME[v], false);
+
+// ---- 波形と切り出し・ループ ----
+const cv = $('wave'), cx = cv.getContext('2d');
+
+// 表示範囲（v0〜v1）の列データ。表示範囲が変わったときだけ作り直す
+function viewCols(s) {
+  const cb = crushed(s), key = s.v0 + ',' + s.v1 + ',' + crushKey(s);
+  if (s.ck === key && s.cb === cb) return s.cols;
+  s.cb = cb;
+  const d = cb.getChannelData(0), n = d.length, len = s.v1 - s.v0;
+  const out = s.cols || new Float32Array(W * 2);
+  for (let x = 0; x < W; x++) {
+    const i0 = s.v0 + Math.floor(x * len / W), i1 = Math.max(i0 + 1, s.v0 + Math.floor((x + 1) * len / W));
+    let lo = Infinity, hi = -Infinity;
+    for (let i = Math.max(0, i0 - 1); i < i1 && i < n; i++) { const v = d[i]; if (v < lo) lo = v; if (v > hi) hi = v; }
+    if (lo === Infinity) lo = hi = 0;
+    out[x * 2] = lo; out[x * 2 + 1] = hi;
+  }
+  s.cols = out; s.ck = key;
+  return out;
+}
+
+function setView(s, v0, v1) {
+  const n = s.buf.length, len = clamp(v1 - v0, Math.min(n, W / 2), n);
+  s.v0 = Math.round(clamp(v0, 0, n - len));
+  s.v1 = Math.round(s.v0 + len);
+}
+// キーボードで動かした端が画面外に出たら表示を追いかける
+function follow(s, f) {
+  const len = s.v1 - s.v0;
+  if (f < s.v0) setView(s, f - len * 0.1, f + len * 0.9);
+  else if (f > s.v1) setView(s, f - len * 0.9, f + len * 0.1);
+}
+// ループ範囲を切り出し範囲の中に収める
+function fixLoop(s) {
+  if (s.ls == null) return;
+  s.ls = clamp(s.ls, s.a, s.b - MIN_LEN);
+  s.le = clamp(s.le, s.ls + MIN_LEN, s.b);
+}
+
+function draw() {
+  const s = samples[cur];
+  $('ed').hidden = !s || !!picking;
+  if (!s) return;
+  const cols = viewCols(s), g = outGain(s), len = s.v1 - s.v0;
+  const X = f => (f - s.v0) / len * W, xa = X(s.a), xb = X(s.b);
+  const line = (x, c) => { if (x >= 0 && x <= W) { cx.fillStyle = c; cx.fillRect(Math.min(W - 1, Math.round(x)), 0, 1, H); } };
+  cx.fillStyle = '#fff'; cx.fillRect(0, 0, W, H);
+  if (s.loop) { cx.fillStyle = 'rgba(47,111,222,.12)'; cx.fillRect(X(s.ls), 0, X(s.le) - X(s.ls), H); }
+  cx.fillStyle = LINE; cx.fillRect(0, H / 2, W, 1);
+  for (let x = 0; x < W; x++) {
+    const lo = clamp(cols[x * 2] * g, -1, 1), hi = clamp(cols[x * 2 + 1] * g, -1, 1);
+    const y0 = (1 - hi) * H / 2, y1 = (1 - lo) * H / 2;
+    cx.fillStyle = x + 1 > xa && x < xb ? INK : LINE;
+    cx.fillRect(x, y0, 1, Math.max(1, y1 - y0));
+  }
+  line(xa, INK); line(xb, INK);
+  if (s.loop) {
+    for (const f of [s.ls, s.le]) { const x = X(f); line(x, ACC); cx.fillRect(Math.round(x) - 3, H - 8, 8, 8); }
+  }
+  $('len').textContent = ((s.b - s.a) / s.buf.sampleRate).toFixed(3) + '秒';
+  $('hint').innerHTML = 'ドラッグで使う範囲を選ぶ／黒い線をドラッグで端を調整／ホイールで拡大'
+    + (s.loop ? '<br>青い部分は鍵盤を押している間くり返し鳴ります。下の■をドラッグで端を調整' : '');
+  $('norm').setAttribute('aria-pressed', s.norm);
+  $('loop').setAttribute('aria-pressed', s.loop);
+  for (const f of ['root', 'lo', 'hi']) $(f).textContent = keyName(s[f]);
+  $('rate').textContent = rateName(s.rate);
+  $('bits').textContent = s.bits + 'bit';
+  $('lpf').textContent = LPF_NAME[s.lpf || 0];
+  for (const id in LOOKS) { const [r, b, l] = LOOKS[id]; $(id).setAttribute('aria-pressed', (s.rate || 0) === r && s.bits === b && (s.lpf || 0) === l); }
+  $('excl').textContent = s.excl ? s.excl : 'なし';
+  volCells.forEach((c, k) => c.classList.toggle('on', k <= s.vol));
+  $('vol').setAttribute('aria-valuenow', s.vol + 1);
+  $('db').textContent = VOL_DB[s.vol] + 'dB';
+  // パンは中央から今の位置までを黒くする
+  const p = s.pan - 4;
+  panCells.forEach((c, k) => { const v = k - 4; c.classList.toggle('on', v === 0 || (p < 0 ? v >= p && v < 0 : v <= p && v > 0)); });
+  $('pan').setAttribute('aria-valuenow', p);
+  $('lr').textContent = p ? (p < 0 ? '左' : '右') + Math.abs(p) : '中央';
+  liveUpdate(s);
+}
+
+// ---- 段階バー（音量・パン）。離したとき・キーで変えたときに試聴 ----
+function stepBar(el, n, key) {
+  const cells = [...Array(n)].map(() => el.appendChild(document.createElement('i')));
+  const set = i => {
+    const s = samples[cur]; if (!s) return false;
+    i = clamp(i, 0, n - 1);
+    if (i === s[key]) return false;
+    s[key] = i; draw();
+    return true;
+  };
+  const fromX = e => { const r = el.getBoundingClientRect(); set(Math.floor((e.clientX - r.left) / r.width * n)); };
+  el.onpointerdown = e => { el.setPointerCapture(e.pointerId); fromX(e); };
+  el.onpointermove = e => { if (el.hasPointerCapture(e.pointerId)) fromX(e); };
+  el.onpointerup = () => samples[cur] && previewUnlessHeld(samples[cur]);
+  el.onkeydown = e => {
+    const s = samples[cur]; if (!s) return;
+    const d = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key];
+    if (d) { if (set(s[key] + d)) previewUnlessHeld(s); e.preventDefault(); }
+  };
+  return cells;
+}
+const volCells = stepBar($('vol'), VOL_DB.length, 'vol');
+const panCells = stepBar($('pan'), 9, 'pan');   // L4〜C〜R4
+
+// 波形の下の方（青い四角のあたり）はループの端を、上の方は切り出しの端を優先してつかむ
+const edgeAt = (s, px, py, r) => {
+  const len = s.v1 - s.v0, near = f => Math.abs(px - (f - s.v0) / len * r.width) <= 6;
+  const trim = ['a', 'b'], loop = s.loop ? ['ls', 'le'] : [];
+  const order = py > r.height * 0.66 ? [...loop, ...trim] : [...trim, ...loop];
+  return order.find(f => near(s[f])) || null;
+};
+
+cv.onpointerdown = e => {
+  const s = samples[cur]; if (!s) return;
+  const r = cv.getBoundingClientRect(), px = e.clientX - r.left, v0 = s.v0, len = s.v1 - s.v0;
+  const fx = v => Math.round(v0 + clamp(v / r.width, 0, 1) * len);
+  drag = { mode: edgeAt(s, px, e.clientY - r.top, r) || 'new', x0: px, f0: fx(px), moved: false, r, fx };
+  cv.setPointerCapture(e.pointerId);
+};
+cv.onpointermove = e => {
+  const s = samples[cur]; if (!s) return;
+  const r = drag ? drag.r : cv.getBoundingClientRect(), px = e.clientX - r.left;
+  if (!drag) { cv.style.cursor = edgeAt(s, px, e.clientY - r.top, r) ? 'ew-resize' : 'crosshair'; return; }
+  if (!drag.moved && Math.abs(px - drag.x0) < 3) return;
+  drag.moved = true;
+  const n = s.buf.length, f = drag.fx(px);
+  if (drag.mode === 'ls') s.ls = clamp(f, s.a, s.le - MIN_LEN);
+  else if (drag.mode === 'le') s.le = clamp(f, s.ls + MIN_LEN, s.b);
+  else {
+    if (drag.mode === 'a') s.a = clamp(f, 0, s.b - MIN_LEN);
+    else if (drag.mode === 'b') s.b = clamp(f, s.a + MIN_LEN, n);
+    else {
+      s.a = Math.min(drag.f0, f); s.b = Math.max(drag.f0, f);
+      if (s.b - s.a < MIN_LEN) { s.b = Math.min(n, s.a + MIN_LEN); s.a = Math.max(0, s.b - MIN_LEN); }
+    }
+    fixLoop(s);
+  }
+  draw();
+};
+cv.onpointerup = () => { if (!drag) return; const moved = drag.moved; drag = null; if (moved) previewUnlessHeld(samples[cur]); };
+
+// ホイール：拡大縮小（マウス位置中心）／ Shift+ホイール・横スクロール：左右移動
+cv.addEventListener('wheel', e => {
+  const s = samples[cur]; if (!s) return;
+  e.preventDefault();
+  const r = cv.getBoundingClientRect(), len = s.v1 - s.v0;
+  if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+    const d = (e.deltaX || e.deltaY) / r.width * len;
+    setView(s, s.v0 + d, s.v1 + d);
+  } else {
+    const f = s.v0 + clamp((e.clientX - r.left) / r.width, 0, 1) * len, k = e.deltaY > 0 ? 1.25 : 0.8;
+    setView(s, f - (f - s.v0) * k, f + (s.v1 - f) * k);
+  }
+  draw();
+}, { passive: false });
+
+// ←→ 開始 / Shift+←→ 終了 / Alt+←→ ループ開始 / Alt+Shift+←→ ループ終了（1画素ずつ）/ Space 再生
+cv.onkeydown = e => {
+  const s = samples[cur]; if (!s) return;
+  const n = s.buf.length, step = Math.max(1, Math.round((s.v1 - s.v0) / W)), d = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
+  if (d) {
+    if (e.altKey && s.loop) {
+      if (e.shiftKey) { s.le = clamp(s.le + d * step, s.ls + MIN_LEN, s.b); follow(s, s.le); }
+      else { s.ls = clamp(s.ls + d * step, s.a, s.le - MIN_LEN); follow(s, s.ls); }
+    }
+    else if (e.shiftKey) { s.b = clamp(s.b + d * step, s.a + MIN_LEN, n); follow(s, s.b); fixLoop(s); }
+    else { s.a = clamp(s.a + d * step, 0, s.b - MIN_LEN); follow(s, s.a); fixLoop(s); }
+    draw(); e.preventDefault();
+  } else if (e.key === ' ' || e.key === 'Enter') { togglePlay(); e.preventDefault(); }
+};
+
+$('play').onclick = togglePlay;
+$('norm').onclick = () => { const s = samples[cur]; if (s) { s.norm = !s.norm; draw(); replayHeld(s); } };
+$('crushAll').onclick = () => {
+  const s = samples[cur]; if (!s) return;
+  samples.forEach(o => { o.rate = s.rate; o.bits = s.bits; o.lpf = s.lpf; });
+  draw();
+};
+// ワンタッチ設定：[サンプリング, ビット数, こもり]
+const LOOKS = { pSnes: [16000, 12, 2], p64: [22050, 12, 3], pDs: [22050, 8, 0], pOrig: [0, 16, 0] };
+for (const id in LOOKS) $(id).onclick = () => {
+  const s = samples[cur]; if (!s) return;
+  [s.rate, s.bits, s.lpf] = LOOKS[id];
+  draw(); replayHeld(s);
+};
+// 鳴らし続けている音は、波形を作り直したら鳴らし直す
+function replayHeld(s) { if (held) { noteOn('p', s.root, 1, [s]); held = s.loop; playState(); } }
+$('loop').onclick = () => {
+  const s = samples[cur]; if (!s) return;
+  noteOff('p', 0.05);
+  s.loop = !s.loop;
+  if (s.loop && s.ls == null) { s.ls = Math.round(s.a + (s.b - s.a) / 2); s.le = s.b; }
+  fixLoop(s);
+  draw();
+};
+$('zoom').onclick = () => { const s = samples[cur]; if (s) { const m = (s.b - s.a) * 0.1; setView(s, s.a - m, s.b + m); draw(); } };
+$('del').onclick = () => { if (samples[cur]) remove(cur); };
+$('all').onclick = () => { const s = samples[cur]; if (s) { setView(s, 0, s.buf.length); draw(); } };
+
+// ---- ファイル操作 ----
+$('open').onclick = () => $('files').click();
+$('files').onchange = e => { add([...e.target.files]); e.target.value = ''; };
+$('clear').onclick = () => { noteOff('p', 0.01); samples = []; cur = -1; meta = {}; source = null; updateSrc(); renderList(); };
+$('pickBtn').onclick = () => showPicker();
+$('save').onclick = () => {
+  const blob = new Blob([buildSF2(samples, meta)], { type: 'application/octet-stream' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (meta.name || 'sounds').replace(/[\\/:*?"<>|]/g, '_') + '.sf2';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+
+let dragN = 0;
+document.addEventListener('dragenter', e => { e.preventDefault(); if (dragN++ === 0) document.body.classList.add('drag'); });
+document.addEventListener('dragleave', () => { if (--dragN === 0) document.body.classList.remove('drag'); });
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+  e.preventDefault(); dragN = 0; document.body.classList.remove('drag');
+  add([...e.dataTransfer.files].filter(f => f.type.startsWith('audio/') || /\.(wav|mp3|ogg|flac|m4a|aac|aif|aiff|sf2)$/i.test(f.name)));
+});
+
+renderList();
+
+// ---- SF2 読み込み ----
+
+async function openSF2(file) {
+  let sf;
+  try { sf = parseSF2(await file.arrayBuffer()); } catch { alert(`読み込めませんでした：${file.name}`); return; }
+  if (!sf.presets.length) { alert('楽器が入っていません'); return; }
+  if (samples.length && !confirm('今の音を消して、このSF2を開きますか？')) return;
+  noteOff('p', 0.01);
+  source = { sf, preset: null, cache: new Map() };
+  samples = []; cur = -1; meta = {};
+  updateSrc();
+  if (sf.presets.length === 1) return loadPreset(sf.presets[0]);
+  showPicker();
+}
+
+function updateSrc() {
+  $('pickBtn').hidden = !(source && source.sf.presets.length > 1);
+  $('srcName').textContent = source && source.preset ? source.preset.name : '';
+}
+
+// 楽器が複数あるときは、一覧の場所に選択肢を出す
+function showPicker() {
+  if (!source) return;
+  const sf = source.sf;
+  picking = sf;
+  noteOff('p', 0.01);
+  const list = $('list');
+  list.innerHTML = '';
+  const add = (li, fn) => {
+    li.onclick = fn;
+    li.onkeydown = e => {
+      if (e.key === 'Enter' || e.key === ' ') { fn(); e.preventDefault(); }
+      else if (e.key === 'Escape') renderList();
+      else if (e.key === 'ArrowDown' && li.nextSibling) { li.nextSibling.focus(); e.preventDefault(); }
+      else if (e.key === 'ArrowUp' && li.previousSibling) { li.previousSibling.focus(); e.preventDefault(); }
+    };
+    list.appendChild(li);
+  };
+  if (source.preset) add(row('', '戻る', 'back'), () => renderList());
+  let on = null;
+  [...sf.presets].sort((p, q) => p.bank - q.bank || p.prog - q.prog).forEach(p => {
+    const li = row(`${p.bank}:${p.prog}`, p.name, p === source.preset ? 'on' : '');
+    if (p === source.preset) on = li;
+    add(li, () => loadPreset(p));
+  });
+  draw();
+  const f = on || list.querySelector('li:not(.back)');
+  if (f) { f.focus(); f.scrollIntoView({ block: 'center' }); }
+}
+
+function parseSF2(ab) {
+  const dv = new DataView(ab), u8 = new Uint8Array(ab);
+  const id = o => String.fromCharCode(u8[o], u8[o + 1], u8[o + 2], u8[o + 3]);
+  if (id(0) !== 'RIFF' || id(8) !== 'sfbk') throw 0;
+  const ck = {};
+  const walk = (o, end) => {
+    while (o + 8 <= end) {
+      const t = id(o), n = dv.getUint32(o + 4, true);
+      if (t === 'LIST') walk(o + 12, Math.min(end, o + 8 + n)); else ck[t] = { o: o + 8, n };
+      o += 8 + n + (n & 1);
+    }
+  };
+  walk(12, Math.min(ab.byteLength, 8 + dv.getUint32(4, true)));
+  for (const t of ['smpl', 'phdr', 'pbag', 'pgen', 'inst', 'ibag', 'igen', 'shdr']) if (!ck[t]) throw 0;
+  const recs = (t, size, f) => { const c = ck[t], out = []; for (let o = c.o; o + size <= c.o + c.n; o += size) out.push(f(o)); return out; };
+  const str = (o, n) => { let s = ''; for (let i = 0; i < n && u8[o + i]; i++) s += String.fromCharCode(u8[o + i]); return s.trim(); };
+  const bags = t => recs(t, 4, o => dv.getUint16(o, true));
+  const gens = t => recs(t, 4, o => ({ op: dv.getUint16(o, true), u: dv.getUint16(o + 2, true), s: dv.getInt16(o + 2, true) }));
+  const phdr = recs('phdr', 38, o => ({ name: str(o, 20), prog: dv.getUint16(o + 20, true), bank: dv.getUint16(o + 22, true), bag: dv.getUint16(o + 24, true) }));
+  const sm = ck.smpl;
+  return {
+    presets: phdr.slice(0, -1).map((p, i) => ({ ...p, end: phdr[i + 1].bag })),
+    pbag: bags('pbag'), pgen: gens('pgen'), ibag: bags('ibag'), igen: gens('igen'),
+    inst: recs('inst', 22, o => ({ name: str(o, 20), bag: dv.getUint16(o + 20, true) })),
+    shdr: recs('shdr', 46, o => ({ name: str(o, 20), start: dv.getUint32(o + 20, true), end: dv.getUint32(o + 24, true),
+      ls: dv.getUint32(o + 28, true), le: dv.getUint32(o + 32, true), rate: dv.getUint32(o + 36, true),
+      pitch: u8[o + 40], corr: dv.getInt8(o + 41), type: dv.getUint16(o + 44, true) })),
+    smpl: sm.o & 1 ? new Int16Array(ab.slice(sm.o, sm.o + (sm.n & ~1))) : new Int16Array(ab, sm.o, sm.n >> 1),
+  };
+}
+
+// ゾーンごとのジェネレーター（番号→値）。先頭が対象を持たないゾーンなら全体設定として分ける
+function zones(bag, gen, b0, b1, target) {
+  const z = [];
+  for (let b = b0; b < b1; b++) {
+    const g = {};
+    for (let j = bag[b]; j < bag[b + 1] && j < gen.length; j++) g[gen[j].op] = gen[j];
+    z.push(g);
+  }
+  const glob = z.length && !(target in z[0]) ? z.shift() : {};
+  return { glob, list: z.filter(g => target in g) };
+}
+
+// プリセット → 楽器 → サンプルをたどって、鍵盤の範囲ごとの音に平たくする
+// 読み込むのは 範囲・ベロシティ範囲・音量・パン・チューニング・リリース・ループ。それ以外の音色設定は省く
+function loadPreset(p) {
+  audio();
+  noteOff('p', 0.01);
+  if (p === source.preset) return renderList();
+  // 今の楽器の編集内容を残してから切り替える。前に開いた楽器は残しておいた内容に戻す
+  if (source.preset) source.cache.set(source.preset, { samples, cur });
+  const c = source.cache.get(p);
+  if (c) return showPreset(p, c.samples, c.cur);
+  const sf = source.sf;
+  const P = zones(sf.pbag, sf.pgen, p.bag, p.end, 41), out = [], bufs = new Map();
+  for (const pz of P.list) {
+    const pg = { ...P.glob, ...pz }, ii = pg[41].u, ins = sf.inst[ii], next = sf.inst[ii + 1];
+    if (!ins || !next) continue;
+    const I = zones(sf.ibag, sf.igen, ins.bag, next.bag, 53);
+    for (const iz of I.list) {
+      const ig = { ...I.glob, ...iz };
+      const n = op => ig[op] ? ig[op].s : 0, pn = op => pg[op] ? pg[op].s : 0;
+      const range = op => { let lo = 0, hi = 127; for (const r of [ig[op], pg[op]]) if (r) { lo = Math.max(lo, r.u & 255); hi = Math.min(hi, r.u >> 8); } return [lo, hi]; };
+      const [lo, hi] = range(43), [vlo, vhi] = range(44);
+      const sh = sf.shdr[ig[53].u];
+      if (lo > hi || vlo > vhi || !sh || sh.type & 0x8000) continue;
+      const st = sh.start + n(0) + n(4) * 32768, en = sh.end + n(1) + n(12) * 32768;
+      if (st < 0 || en > sf.smpl.length || en - st < MIN_LEN) continue;
+      const bk = st + ',' + en + ',' + sh.rate;
+      let buf = bufs.get(bk);
+      if (!buf) {
+        buf = ctx.createBuffer(1, en - st, clamp(sh.rate || 44100, 3000, 384000));
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < en - st; i++) d[i] = sf.smpl[st + i] / 32768;
+        bufs.set(bk, buf);
+      }
+      const rk = ig[58] ? ig[58].s : -1, root = rk >= 0 && rk <= 127 ? rk : sh.pitch <= 127 ? sh.pitch : 60;
+      const s = item(sh.name || ins.name || 'Sample', buf, lo);
+      Object.assign(s, {
+        lo, hi, root, vlo, vhi,
+        vol: clamp(Math.round((27 - (n(48) + pn(48)) / 10) / 3), 0, 9),
+        pan: clamp(Math.round((n(17) + pn(17)) / 125), -4, 4) + 4,
+        tune: (n(51) + pn(51)) * 100 + n(52) + pn(52) + sh.corr,
+        track: ((ig[56] ? ig[56].s : 100) + pn(56)) / 100,
+        excl: n(57),
+        rel: clamp(2 ** (((ig[38] ? ig[38].s : -12000) + pn(38)) / 1200), 0.001, 20),
+        loop: ((ig[54] ? ig[54].u : 0) & 1) === 1,
+        ls: sh.ls + n(2) + n(45) * 32768 - st,
+        le: sh.le + n(3) + n(50) * 32768 - st,
+      });
+      if (!(s.ls >= 0 && s.le <= s.b && s.le - s.ls >= MIN_LEN)) { if (s.loop) fixLoop(s); else s.ls = s.le = null; }
+      out.push(s);
+    }
+  }
+  if (!out.length) { alert('この楽器には音が入っていません'); return; }
+  showPreset(p, out, 0);
+}
+function showPreset(p, list, i) {
+  source.preset = p;
+  samples = list; cur = i; meta = { name: p.name, bank: p.bank, prog: p.prog };
+  sortSamples();
+  updateSrc();
+  renderList();
+}
+
+// ---- SF2 書き出し ----
+// 音量 × ノーマライズ（切り出した範囲のピークを 0.99 にそろえる倍率。範囲が変わったときだけ計算）
+function gain(s) {
+  let g = 10 ** (VOL_DB[s.vol ?? 9] / 20);
+  if (!s.norm) return g;
+  const key = s.a + ',' + s.b;
+  if (s.gk !== key) {
+    const d = s.buf.getChannelData(0); let p = 0;
+    for (let i = s.a; i < s.b; i++) { const v = Math.abs(d[i]); if (v > p) p = v; }
+    s.g = p > 0 ? 0.99 / p : 1; s.gk = key;
+  }
+  return g * s.g;
+}
+
+// ---- 音の粗さ ----
+// サンプリング：指定のレートの1区間ごとに平均をとり、その値を区間いっぱいに並べる（補間なしで鳴らした昔の機械の音）
+// ビット数：音量の段階を減らす。ノーマライズした後の大きさで刻み、音量はそのあとでかける
+// こもり：刻んだあとに高い音を削り、段差の角を丸める（スーファミの音のなめらかにし方に近い）
+// 作った波形は 元の波形・設定ごとに使い回す
+const crushCache = new WeakMap();
+const crushKey = s => (s.rate || 0) + ',' + (s.bits || 16) + ',' + (s.lpf || 0) + ',' + (s.norm ? s.a + ':' + s.b : '');
+const LPF_K = [0, 0.8, 0.55, 0.38, 0.25];   // 刻んだレートの上限（半分）に対する、残す高さの割合
+function crushed(s) {
+  const src = s.buf, r = src.sampleRate, rate = s.rate && s.rate < r ? s.rate : 0, bits = s.bits || 16;
+  const lpf = s.lpf || 0;
+  if (!rate && bits >= 16 && !lpf) return src;
+  const key = rate + ',' + bits + ',' + lpf + ',' + normGain(s);
+  let m = crushCache.get(src);
+  if (!m) crushCache.set(src, m = new Map());
+  if (m.has(key)) return m.get(key);
+  const d = src.getChannelData(0), n = d.length, out = ctx.createBuffer(1, n, r), o = out.getChannelData(0);
+  const ng = normGain(s), q = 2 ** (bits - 1), step = rate ? r / rate : 1;
+  for (let j = 0; ; j++) {
+    const i0 = Math.floor(j * step), i1 = Math.min(n, Math.max(i0 + 1, Math.floor((j + 1) * step)));
+    if (i0 >= n) break;
+    let v = 0; for (let i = i0; i < i1; i++) v += d[i];
+    v = clamp(v / (i1 - i0) * ng, -1, 1);
+    if (bits < 16) v = Math.round(v * q) / q;
+    for (let i = i0; i < i1; i++) o[i] = v;
+  }
+  if (lpf) {
+    // 2次のローパス（RBJ）。切る高さは 刻んだレート（元のままなら元のレート）を基準にする
+    const fc = Math.min((rate || r) / 2 * LPF_K[lpf], r * 0.45), w = 2 * Math.PI * fc / r, cs = Math.cos(w), al = Math.sin(w) / Math.SQRT2, a0 = 1 + al;
+    const b0 = (1 - cs) / 2 / a0, b1 = (1 - cs) / a0, a1 = -2 * cs / a0, a2 = (1 - al) / a0;
+    let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+    for (let i = 0; i < n; i++) {
+      const x = o[i], y = b0 * x + b1 * x1 + b0 * x2 - a1 * y1 - a2 * y2;
+      x2 = x1; x1 = x; y2 = y1; y1 = y; o[i] = y;
+    }
+  }
+  if (m.size > 8) m.clear();
+  m.set(key, out);
+  return out;
+}
+const isCrushed = s => crushed(s) !== s.buf;
+// 鳴らすときにかける倍率（粗くした波形にはノーマライズが入っているので音量だけ）
+const outGain = s => isCrushed(s) ? 10 ** (VOL_DB[s.vol ?? 9] / 20) : gain(s);
+const normGain = s => s.norm ? gain(s) / 10 ** (VOL_DB[s.vol ?? 9] / 20) : 1;
+
+function pcm16(s) {
+  const d = crushed(s).getChannelData(0).subarray(s.a, s.b), g = outGain(s), out = new Int16Array(d.length);
+  for (let i = 0; i < d.length; i++) out[i] = Math.round(clamp(d[i] * g, -1, 1) * 32767);
+  return out;
+}
+
+const ascii = s => s.replace(/[^\x20-\x7E]/g, '_');
+const concat = arrs => {
+  const out = new Uint8Array(arrs.reduce((n, a) => n + a.length, 0));
+  let o = 0; for (const a of arrs) { out.set(a, o); o += a.length; }
+  return out;
+};
+const str4 = s => new Uint8Array([...s].map(c => c.charCodeAt(0)));
+const u32 = v => { const b = new Uint8Array(4); new DataView(b.buffer).setUint32(0, v, true); return b; };
+const chunk = (id, data) => concat([str4(id), u32(data.length), data, new Uint8Array(data.length % 2)]);
+const riffList = (type, chunks) => chunk('LIST', concat([str4(type), ...chunks]));
+const rec = (size, fill) => { const b = new Uint8Array(size); fill(new DataView(b.buffer), b); return b; };
+const zstr = s => {
+  const a = ascii(s); const b = new Uint8Array(a.length + 1 + ((a.length + 1) % 2));
+  for (let i = 0; i < a.length; i++) b[i] = a.charCodeAt(i);
+  return b;
+};
+const name20 = s => {
+  const a = ascii(s).slice(0, 19); const b = new Uint8Array(20);
+  for (let i = 0; i < a.length; i++) b[i] = a.charCodeAt(i);
+  return b;
+};
+// 日本語だけの名前は「_」だらけになるので番号名にする
+const sampleName = (s, i) => /[A-Za-z0-9]/.test(ascii(s)) ? s : `Sample ${i + 1}`;
+const gen = (op, amt) => rec(4, dv => { dv.setUint16(0, op, true); dv.setUint16(2, amt & 0xFFFF, true); });
+const bag = (g, m) => rec(4, dv => { dv.setUint16(0, g, true); dv.setUint16(2, m, true); });
+
+function buildSF2(samples, meta = {}) {
+  // サンプルデータ。同じ波形・同じ切り出し・同じ音量のものは1つにまとめる（各サンプルの後ろに46点の無音）
+  const ids = new WeakMap(), uniq = new Map(), pcm = [], hdr = [];
+  let offset = 0;
+  let nb = 0; const bufId = b => { if (!ids.has(b)) ids.set(b, nb++); return ids.get(b); };
+  const sid = samples.map((s, i) => {
+    const key = [bufId(s.buf), s.a, s.b, s.norm, s.vol, s.rate, s.bits, s.lpf, s.loop ? s.ls + ':' + s.le : ''].join(',');
+    if (uniq.has(key)) return uniq.get(key);
+    const m = pcm16(s), start = offset, end = offset + m.length, pad = m.length >= 32 ? 8 : 0;
+    hdr.push({ name: sampleName(s.name, i), start, end, rate: s.buf.sampleRate, root: s.root,
+      ls: s.loop ? start + s.ls - s.a : start + pad,     // ループしない音も、ループ点は端から8点内側に置く（仕様の推奨）
+      le: s.loop ? start + s.le - s.a : end - pad });
+    pcm.push(new Uint8Array(m.buffer), new Uint8Array(46 * 2));
+    offset = end + 46;
+    uniq.set(key, hdr.length - 1);
+    return hdr.length - 1;
+  });
+
+  const name = meta.name || 'Sounds';
+  const info = riffList('INFO', [
+    chunk('ifil', rec(4, dv => { dv.setUint16(0, 2, true); dv.setUint16(2, 1, true); })),
+    chunk('isng', zstr('EMU8000')),
+    chunk('INAM', zstr(name)),
+  ]);
+  const sdta = riffList('sdta', [chunk('smpl', concat(pcm))]);
+
+  // プリセット1つ → 楽器1つ → 音ごとに1ゾーン
+  const phdr = (nm, bagNdx, prog = 0, bank = 0) => rec(38, (dv, b) => { b.set(name20(nm)); dv.setUint16(20, prog, true); dv.setUint16(22, bank, true); dv.setUint16(24, bagNdx, true); });
+  const inst = (nm, bagNdx) => rec(22, (dv, b) => { b.set(name20(nm)); dv.setUint16(20, bagNdx, true); });
+
+  const ibags = [], igens = [];
+  samples.forEach((s, i) => {
+    // 並び順は仕様どおり keyRange → velRange が先頭、sampleID が最後
+    const g = [gen(43, s.lo | s.hi << 8)];
+    if (s.vlo > 0 || s.vhi < 127) g.push(gen(44, s.vlo | s.vhi << 8));
+    if (s.pan !== 4) g.push(gen(17, (s.pan - 4) * 125));
+    const tune = Math.round(s.tune || 0), coarse = Math.trunc(tune / 100), fine = tune - coarse * 100;
+    if (coarse) g.push(gen(51, coarse));
+    if (fine) g.push(gen(52, fine));
+    if ((s.track ?? 1) !== 1) g.push(gen(56, Math.round(s.track * 100)));
+    if (s.excl) g.push(gen(57, s.excl));
+    g.push(gen(38, clamp(Math.round(1200 * Math.log2(relOf(s))), -12000, 8000)));
+    if (s.loop) g.push(gen(54, 1));
+    g.push(gen(58, s.root), gen(53, sid[i]));
+    ibags.push(bag(igens.length, 0));
+    igens.push(...g);
+  });
+  ibags.push(bag(igens.length, 0));
+  igens.push(gen(0, 0));
+
+  const shdrs = hdr.map(h => rec(46, (dv, b) => {
+    b.set(name20(h.name));
+    dv.setUint32(20, h.start, true); dv.setUint32(24, h.end, true);
+    dv.setUint32(28, h.ls, true); dv.setUint32(32, h.le, true);
+    dv.setUint32(36, h.rate, true);
+    dv.setUint8(40, h.root); dv.setUint16(44, 1, true);
+  }));
+  shdrs.push(rec(46, (dv, b) => b.set(name20('EOS'))));
+
+  const pdta = riffList('pdta', [
+    chunk('phdr', concat([phdr(name, 0, meta.prog, meta.bank), phdr('EOP', 1)])),
+    chunk('pbag', concat([bag(0, 0), bag(1, 0)])),
+    chunk('pmod', new Uint8Array(10)),
+    chunk('pgen', concat([gen(41, 0), gen(0, 0)])),
+    chunk('inst', concat([inst(name, 0), inst('EOI', samples.length)])),
+    chunk('ibag', concat(ibags)),
+    chunk('imod', new Uint8Array(10)),
+    chunk('igen', concat(igens)),
+    chunk('shdr', concat(shdrs)),
+  ]);
+
+  return chunk('RIFF', concat([str4('sfbk'), info, sdta, pdta]));
+}
+</script>
+</body>
+</html>
